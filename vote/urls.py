@@ -7,6 +7,7 @@ pollpatterns = [
     url(r'^vote$', views.vote, name='vote'),
     url(r'^success$', views.success, name='success'),
     url(r'^manage$', views.manage, name='manage'),
+    url(r'^results', views.results, name='manage'),
 ]
 
 urlpatterns = [
