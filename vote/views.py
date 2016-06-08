@@ -58,7 +58,7 @@ def manage(request, poll_identifier):
         if poll.creator_token == token:
             poll.is_active = False
             poll.save()
-            return HttpResponseRedirect('.')
+            return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier)))
         error_message = 'Wrong management token'
     context = {
         'poll': poll,
