@@ -1,11 +1,12 @@
 from django.db import models
-from datetime import datetime
+from django.utils.timezone import now
+
 
 
 class Poll(models.Model):
     title = models.CharField(max_length=200)
     question_text = models.TextField()
-    pub_date = models.DateTimeField('date published', default=datetime.now, blank=True)
+    pub_date = models.DateTimeField('date published', default=now, blank=True)
     creator_token = models.CharField(max_length=512)
     is_active = models.BooleanField(default=True)
     identifier = models.CharField(max_length=64)
