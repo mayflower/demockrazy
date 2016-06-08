@@ -2,12 +2,12 @@
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'vote:success' poll_identifier=poll.identifier %}" method="post">
+<form action="{% url 'vote:vote' poll_identifier=poll.identifier %}" method="post">
     {% csrf_token %}
     {% for choice in poll.choice_set.all %}
     <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
     <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
     {% endfor %}
-    <label for="token">Token: </label><input type="text" id="token">
+    <label for="token">Token: </label><input type="text" id="token" name="token">
     <input type="submit" value="Vote" />
 </form>

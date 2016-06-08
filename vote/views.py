@@ -2,42 +2,45 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 
-from .models import Poll
+from .models import Poll, Choice, Token
+
 
 def poll(request, poll_identifier):
-    poll = get_object_or_404(Poll, identifier = poll_identifier)
-    return render (request, 'vote/poll.html', {'poll': poll})
+    poll = get_object_or_404(Poll, identifier=poll_identifier)
+    return render(request, 'vote/poll.html', {'poll': poll})
 
 
 def create(request):
-    return render (request, 'vote/create.html')
+    return render(request, 'vote/create.html')
 
 
 def vote(request, poll_identifier):
+    def handle_vote_error(poll, request, message):
+        return render(request, 'vote/poll.html', {
+            'poll': poll,
+            'error_message': message,
+        })
+
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     try:
         token = Token.objects.get(token_string=request.POST['token'])
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
-        return render(request, 'vote/poll.html', {
-            'poll': poll,
-            'error_message': "You didn't select a choice.",
-        })
+        selected_choice = poll.choice_set.get(pk=request.POST['choice'])
+    except KeyError:
+        return handle_vote_error(poll, request, "Please fill out all fields.")
+    except Choice.DoesNotExist:
+        return handle_vote_error(poll, request, "You didn't select a choice.")
+    except Token.DoesNotExist:
+        return handle_vote_error(poll, request, "invalid token.")
     else:
-        if token is not null and token.poll == poll:
+        print(token.token_string)
+        print("holla")
+        if token is not None and token.poll == poll:
             selected_choice.votes += 1
             token.delete()
             selected_choice.save()
-            # Always return an HttpResponseRedirect after successfully dealing
-            # with POST data. This prevents data from being posted twice if a
-            # user hits the Back button.
             return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
         else:
-            return render(request, 'vote/poll.html', {
-                'poll': poll,
-                'error_message': "the token does not match the poll.",
-            })
+            return handle_vote_error(poll, request, "invalid token.")
 
 
 def success(request, poll_identifier):
@@ -60,3 +63,4 @@ def manage(request, poll_identifier):
         'error_message': error_message,
     }
     return render(request, 'vote/manage.html', context )
+
