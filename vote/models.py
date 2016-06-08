@@ -6,8 +6,8 @@ class Poll(models.Model):
     question_text = models.TextField()
     pub_date = models.DateTimeField('date published')
     creator_token = models.CharField(max_length=512)
+    identifier = models.CharField(max_length=64, default="")
     is_active = models.BooleanField(default=True)
-    identifier = models.CharField(max_length=64)
 
 
 class Choice(models.Model):
