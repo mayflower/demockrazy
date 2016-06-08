@@ -43,3 +43,20 @@ def vote(request, poll_identifier):
 def success(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     return render(request, 'vote/success.html', {'poll': poll})
+
+
+def manage(request, poll_identifier):
+    poll = get_object_or_404(Poll, identifier = poll_identifier)
+    error_message = None
+    if request.method == 'POST':
+        token = request.POST['token']
+        if poll.creator_token == token:
+            poll.is_active = False
+            poll.save()
+            return HttpResponseRedirect('.')
+        error_message = 'Wrong management token'
+    context = {
+        'poll': poll,
+        'error_message': error_message,
+    }
+    return render(request, 'vote/manage.html', context )

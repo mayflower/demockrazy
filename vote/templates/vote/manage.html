@@ -1,0 +1,9 @@
+{{ poll }}<br>
+{% if error_message %}
+<p>{{ error_message }}</p>
+{% endif %}
+<form action="{% url 'vote:manage' poll_identifier=poll.identifier %}" method="post">
+{% csrf_token %}
+<input type="text" name="token"><br>
+<input type="submit" value="Deactivate">
+</form>
