@@ -6,12 +6,14 @@ class Poll(models.Model):
     question_text = models.TextField()
     pub_date = models.DateTimeField('date published')
     creator_token = models.CharField(max_length=512)
+    is_active = models.BooleanField(default=True)
 
 
 class Choice(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     choice_text = models.TextField()
     votes = models.IntegerField(default=0)
+
 
 class Token:
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
