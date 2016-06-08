@@ -1,3 +1,4 @@
+{% block content %}
 <h1>results for poll {{ poll.title }}</h1>
 
 <ul>
@@ -5,3 +6,4 @@
     <li>{{ choice.choice_text }}: {{ choice.votes }}</li>
     {% endfor %}
 </ul>
+{% endblock %}

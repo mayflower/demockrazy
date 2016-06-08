@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<html>
+ <head>
+  <link rel="stylesheet" type="text/css" href="{% static "bootstrap-3.3.6-dist/css/bootstrap.css" %}" />
+  <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}" />
+  <title>{% block title %}Demockrazy{% endblock %}</title>
+ </head>
+ <body>
+  {% autoescape on %}
+  <div id="main">
+   <div id="header">
+    HEADER
+   </div>
+   <div id="content">
+    {% block content %}{% endblock %}
+   </div>
+   <div id="footer">
+    FOOTER
+   </div>
+  </div>
+  {% endautoescape %}
+ </body>
+</html>

@@ -1,3 +1,4 @@
+{% block content %}
 <h1>Poll {{ poll.title }}</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -11,3 +12,4 @@
     <label for="token">Token: </label><input type="text" id="token" name="token">
     <input type="submit" value="Vote" />
 </form>
+{% endblock %}

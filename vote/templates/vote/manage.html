@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
 {{ poll }}<br>
 {% if error_message %}
 <p>{{ error_message }}</p>
@@ -7,3 +10,4 @@
 <input type="text" name="token"><br>
 <input type="submit" value="Deactivate">
 </form>
+{% endblock %}
