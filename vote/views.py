@@ -1,12 +1,11 @@
 from django.http import HttpResponse
-from django.template import loader
+from django.shortcuts import render, get_object_or_404
 
 from .models import Poll
 
 def poll(request, poll_identifier):
-    poll = Poll.objects.get(identifier = poll_identifier)
-    template = loader.get_template('vote/poll.html')
-    context = {
-        'poll': poll,
-    }
-    return HttpResponse(template.render(context, request))
+    poll = get_object_or_404(Poll, identifier = poll_identifier)
+    return render (request, 'vote/poll.html', {'poll': poll})
+
+def create(request):
+    return render (request, 'vote/create.html')
