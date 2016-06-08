@@ -11,6 +11,7 @@ pollpatterns = [
 ]
 
 urlpatterns = [
-    url(r'^$', views.create, name='create'),
+    url(r'^$', views.index, name='index'),
+    url(r'^create$', views.create, name='create'),
     url(r'^(?P<poll_identifier>[a-zA-Z]+)/', include(pollpatterns)),
 ]

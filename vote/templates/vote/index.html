@@ -1,0 +1,24 @@
+<h1>create a new poll</h1>
+
+{% if error_message %}<p>{{ error_message }}</p>{% endif %}
+
+<form action="{% url 'vote:create' %}" method="post">
+    {% csrf_token %}
+    <label for="title">poll title:</label>
+    <input type="text" name="title" id="title">
+    <br>
+
+    <label for="description">description:</label>
+    <textarea name="description" id="description" cols="72" rows="50"></textarea>
+    <br>
+
+    <label for="creator_mail">admin mail:</label>
+    <input type="email" name="creator_mail" id="creator_mail">
+    <br>
+
+    <label for="voter_mails">recipients:</label>
+    <textarea name="voter_mails" id="voter_mails" cols="72" rows="50"></textarea>
+    <br>
+
+    <input type="submit" value="submit">
+</form>

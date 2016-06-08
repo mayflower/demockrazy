@@ -10,6 +10,10 @@ def poll(request, poll_identifier):
     return render(request, 'vote/poll.html', {'poll': poll})
 
 
+def index(request):
+    return render(request, 'vote/index.html')
+
+
 def create(request):
     return render(request, 'vote/create.html')
 
@@ -34,9 +38,7 @@ def vote(request, poll_identifier):
     except Token.DoesNotExist:
         return handle_vote_error(poll, request, "invalid token.")
     else:
-        print(token.token_string)
-        print("holla")
-        if token is not None and token.poll == poll:
+        if token.poll == poll:
             selected_choice.votes += 1
             token.delete()
             selected_choice.save()
