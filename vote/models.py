@@ -1,26 +1,9 @@
 from django.db import models
 from django.utils.timezone import now
-from django.db.models.signals import pre_save
 
 import random
 import string
 
-
-class Poll(models.Model):
-    title = models.CharField(max_length=200)
-    question_text = models.TextField()
-    pub_date = models.DateTimeField('date published', default=now, blank=True)
-    creator_token = models.CharField(max_length=512)
-    identifier = models.CharField(max_length=64, default="")
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-
-def initialize_randoms(sender, instance, *args, **kwargs):
-    instance.creator_token = instance.creator_token or rand_string(128)
-    instance.identifier = instance.identifier or get_identifier()
 
 
 def rand_string(length):
@@ -29,15 +12,37 @@ def rand_string(length):
     ) for _ in range(length))
 
 
-def get_identifier():
+def mk_admin_token():
+    return rand_string(256)
+
+
+def mk_identifier():
     id = rand_string(64)
     if not Poll.objects.filter(identifier=id).exists():
         return id
     else:
-        return get_identifier()
+        return mk_identifier()
 
 
-pre_save.connect(initialize_randoms, Poll)
+def mk_token():
+    tok = rand_string(128)
+    if not Token.objects.filter(token_string=tok).exists():
+        return tok
+    else:
+        return mk_token()
+
+
+class Poll(models.Model):
+    title = models.CharField(max_length=200)
+    question_text = models.TextField()
+    pub_date = models.DateTimeField('date published', default=now, blank=True)
+    creator_token = models.CharField(max_length=512, default=mk_admin_token)
+    identifier = models.CharField(max_length=64, default=mk_identifier)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
 
 class Choice(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
