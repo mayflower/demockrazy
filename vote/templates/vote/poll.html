@@ -14,4 +14,9 @@
     <label for="token">Token: </label><input type="text" id="token" name="token" value="{{token}}">
     <input type="submit" value="Vote" />
 </form>
+<div>
+Total tokens: {{ amount_tokens_total }}<br>
+Redeemed tokens: {{ amount_redeemed_tokens }}<br>
+Remaining tokens: {{ amount_remaining_tokens }}<br>
+</div>
 {% endblock %}

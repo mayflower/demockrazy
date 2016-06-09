@@ -10,8 +10,9 @@ from .models import Poll, Choice, Token
 def poll(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     token = request.GET.get('token', "Please enter your voting token")
+    amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
     if poll.is_active:
-        return render(request, 'vote/poll.html', {'poll': poll, 'token': token})
+        return render(request, 'vote/poll.html', {'poll': poll, 'token': token, "amount_redeemed_tokens": amount_redeemed_tokens, "amount_remaining_tokens": amount_remaining_tokens, "amount_tokens_total": amount_tokens_total })
     else:
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
 
@@ -89,10 +90,14 @@ def create(request):
 
 def vote(request, poll_identifier):
     def handle_vote_error(poll, request, message, token_string):
+        amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
         return render(request, 'vote/poll.html', {
             'poll': poll,
             'error_message': message,
             'token': token_string,
+            "amount_redeemed_tokens": amount_redeemed_tokens,
+            "amount_remaining_tokens": amount_remaining_tokens,
+            "amount_tokens_total": amount_tokens_total
         })
 
     poll = get_object_or_404(Poll, identifier=poll_identifier)
@@ -142,6 +147,12 @@ def manage(request, poll_identifier):
 
 def results(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
+    amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
     if poll.is_active:
         return HttpResponseRedirect(reverse('vote:poll', args=(poll_identifier,)))
-    return render(request, 'vote/results.html', {'poll': poll})
+    return render(request, 'vote/results.html', {
+      'poll': poll,
+      'amount_redeemed_tokens': amount_redeemed_tokens,
+      'amount_remaining_tokens': amount_remaining_tokens,
+      'amount_tokens_total': amount_tokens_total,
+    })

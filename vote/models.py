@@ -43,6 +43,13 @@ class Poll(models.Model):
     def __str__(self):
         return self.title
 
+    def get_amount_used_unused(self):
+        amount_redeemed_tokens = 0
+        choices = Choice.objects.filter(poll=self)
+        for choice in choices:
+            amount_redeemed_tokens += choice.votes
+        amount_remaining_tokens = len(Token.objects.filter(poll=self))
+        return (amount_redeemed_tokens, amount_remaining_tokens, amount_redeemed_tokens + amount_remaining_tokens)
 
 class Choice(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
