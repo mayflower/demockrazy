@@ -5,7 +5,6 @@ from django.shortcuts import render, get_object_or_404
 
 from .models import Poll, Choice, Token
 
-
 def poll(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if poll.is_active:
@@ -51,6 +50,15 @@ def create(request):
             token.save()
             result.append(token)
         return result
+    def send_mails_with_tokens(poll, voter_mails, tokens):
+        token_strings = [token.token_string for token in tokens]
+        for voter_mail in voter_mails:
+            send_mail('You\'re invited to participate in a vote',
+              "Hi, please submit you're vote on '%s' here: '%s' using the following token: '%s'." % ( poll.title, reverse('vote:poll', args=(poll.identifier,)), token_strings.pop()),
+              'from@demockrazy.demockrazy',
+              [voter_mail],
+              fail_silently=False,
+            )
     p_title = request.POST['title']
     p_description = request.POST['description']
     creator_mail  = request.POST['creator_mail']
@@ -62,6 +70,7 @@ def create(request):
     poll.save()
     choice_objects  = create_choice_objects(choices, poll)
     tokens   = create_token_objects(poll, len(voter_mails))
+    #send_mails_with_tokens(poll, voter_mails, tokens)
     return render(request, 'vote/create.html')
 
 
