@@ -7,8 +7,9 @@ from .models import Poll, Choice, Token
 
 def poll(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
+    token = request.GET.get('token', "Please enter your voting token")
     if poll.is_active:
-        return render(request, 'vote/poll.html', {'poll': poll})
+        return render(request, 'vote/poll.html', {'poll': poll, 'token': token})
     else:
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
 
@@ -75,24 +76,26 @@ def create(request):
 
 
 def vote(request, poll_identifier):
-    def handle_vote_error(poll, request, message):
+    def handle_vote_error(poll, request, message, token_string):
         return render(request, 'vote/poll.html', {
             'poll': poll,
             'error_message': message,
+            'token': token_string,
         })
 
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if not poll.is_active:
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
     try:
+        token_string = request.POST['token']
         token = Token.objects.get(token_string=request.POST['token'])
         selected_choice = poll.choice_set.get(pk=request.POST['choice'])
     except KeyError:
-        return handle_vote_error(poll, request, "Please fill out all fields.")
+        return handle_vote_error(poll, request, "Please fill out all fields.", token_string)
     except Choice.DoesNotExist:
-        return handle_vote_error(poll, request, "You didn't select a choice.")
+        return handle_vote_error(poll, request, "You didn't select a choice.", token_string)
     except Token.DoesNotExist:
-        return handle_vote_error(poll, request, "invalid token.")
+        return handle_vote_error(poll, request, "invalid token.", token_string)
     else:
         if token.poll == poll:
             selected_choice.votes += 1
@@ -100,7 +103,7 @@ def vote(request, poll_identifier):
             selected_choice.save()
             return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
         else:
-            return handle_vote_error(poll, request, "invalid token.")
+            return handle_vote_error(poll, request, "invalid token.", token_string)
 
 
 def success(request, poll_identifier):
