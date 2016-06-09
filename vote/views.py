@@ -15,6 +15,10 @@ def index(request):
 
 
 def create(request):
+    p_title = request.POST['title']
+    p_description = request.POST['description']
+    poll = Poll(title=p_title, question_text=p_description)
+    poll.save()
     return render(request, 'vote/create.html')
 
 
