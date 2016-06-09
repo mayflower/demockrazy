@@ -49,7 +49,13 @@ class Choice(models.Model):
     choice_text = models.TextField()
     votes = models.IntegerField(default=0)
 
+    def __str__(self):
+        return "%s - %s" % (self.poll, self.choice_text )
+
 
 class Token(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     token_string = models.CharField(max_length=128)
+
+    def __str__(self):
+        return "%s Token" % self.poll
