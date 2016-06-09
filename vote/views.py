@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.core.mail import send_mail
+from django.db.models import F
 from django.shortcuts import render, get_object_or_404
 
 from .models import Poll, Choice, Token
@@ -115,8 +116,9 @@ def vote(request, poll_identifier):
         return handle_vote_error(poll, request, "invalid token.", token_string)
     else:
         if token.poll == poll:
-            selected_choice.votes += 1
             token.delete()
+            # F is used to avoid race conditions
+            selected_choice.votes = F('votes') + 1
             selected_choice.save()
             return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
         else:
