@@ -8,7 +8,10 @@ from .models import Poll, Choice, Token
 
 def poll(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
-    return render(request, 'vote/poll.html', {'poll': poll})
+    if poll.is_active:
+        return render(request, 'vote/poll.html', {'poll': poll})
+    else:
+        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
 
 
 def index(request):
@@ -105,5 +108,5 @@ def manage(request, poll_identifier):
 def results(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if poll.is_active:
-      return HttpResponseRedirect(reverse('vote:vote', args=(poll_identifier,)))
+        return HttpResponseRedirect(reverse('vote:poll', args=(poll_identifier,)))
     return render(request, 'vote/results.html', {'poll': poll})
