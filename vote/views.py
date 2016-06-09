@@ -31,7 +31,7 @@ def vote(request, poll_identifier):
 
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if not poll.is_active:
-        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier)))
+        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
     try:
         token = Token.objects.get(token_string=request.POST['token'])
         selected_choice = poll.choice_set.get(pk=request.POST['choice'])
@@ -64,7 +64,7 @@ def manage(request, poll_identifier):
         if poll.creator_token == token:
             poll.is_active = False
             poll.save()
-            return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier)))
+            return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
         error_message = 'Wrong management token'
     context = {
         'poll': poll,
