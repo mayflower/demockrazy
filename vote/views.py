@@ -53,6 +53,14 @@ def create(request):
             token.save()
             result.append(token)
         return result
+    def send_creator_mail(poll, creator_mail, creator_token):
+        manage_url = settings.VOTE_BASE_URL + reverse('vote:manage', args=(poll.identifier,))
+        send_mail('demockrazy: You created a new poll',
+                  "Hi, you just created a new poll that is manageable at %(manage_url)s\nYour admin token is: %(creator_token)s\nThank you for flying with LuftHansa" % { "manage_url": manage_url, "creator_token": creator_token},
+            settings.VOTE_MAIL_FROM,
+            [creator_mail],
+            fail_silently=False,
+        )
     def send_mails_with_tokens(poll, voter_mails, tokens):
         token_strings = [token.token_string for token in tokens]
         for voter_mail in voter_mails:
@@ -74,6 +82,7 @@ def create(request):
     poll.save()
     choice_objects  = create_choice_objects(choices, poll)
     tokens   = create_token_objects(poll, len(voter_mails))
+    send_creator_mail(poll, creator_mail, poll.creator_token)
     send_mails_with_tokens(poll, voter_mails, tokens)
     return render(request, 'vote/create.html')
 
