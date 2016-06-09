@@ -61,6 +61,8 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
+*.swp
+
 db.sqlite3
 migrations/
 static/
