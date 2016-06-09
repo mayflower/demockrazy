@@ -124,7 +124,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 EMAIL_HOST = "mail.mayflower.de"
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "derp"
-EMAIL_HOST_PASSWORD = "derp"
+#EMAIL_HOST_USER = "derp"
+#EMAIL_HOST_PASSWORD = "derp"
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+VOTE_MAIL_FROM = "WahlLeitung@mayflower.de"
+VOTE_BASE_URL = 'http://127.0.0.1:8000'
+VOTE_MAIL_SUBJECT = "demockrazy: Eine neue Abstimmung ist verfügbar"
+VOTE_MAIL_TEXT = '''
+Hallo,
+
+Jemand hat eine Abstimmung auf %(vote_base_url)s erstellt.
+Du wurdest eingeladen an dieser Abstimmung teilzunehmen.
+
+Dies ist dir über folgenden Link möglich:
+%(poll_url_with_token)s
+
+Nach Abgabe deiner Stimme wird der Token aus der Datenbank gelöscht.
+Dadurch gibt es keine Korrelation zwischen Token (Teilnehmer) und abgegebener Stimme.
+
+XoXoXo
+Die Wahlleitung
+
+'''
+
+
+

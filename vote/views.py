@@ -1,6 +1,8 @@
 from django.http import HttpResponseRedirect, HttpResponse
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404
 
 from .models import Poll, Choice, Token
@@ -54,11 +56,12 @@ def create(request):
     def send_mails_with_tokens(poll, voter_mails, tokens):
         token_strings = [token.token_string for token in tokens]
         for voter_mail in voter_mails:
-            send_mail('You\'re invited to participate in a vote',
-              "Hi, please submit you're vote on '%s' here: '%s' using the following token: '%s'." % ( poll.title, reverse('vote:poll', args=(poll.identifier,)), token_strings.pop()),
-              'from@demockrazy.demockrazy',
-              [voter_mail],
-              fail_silently=False,
+            poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:poll', args=(poll.identifier,)) + '?token=' + token_strings.pop()
+            send_mail(settings.VOTE_MAIL_SUBJECT,
+                settings.VOTE_MAIL_TEXT % { "poll_url_with_token": poll_url_with_token, "vote_base_url": settings.VOTE_BASE_URL},
+                settings.VOTE_MAIL_FROM,
+                [voter_mail],
+                fail_silently=False,
             )
     p_title = request.POST['title']
     p_description = request.POST['description']
@@ -71,7 +74,7 @@ def create(request):
     poll.save()
     choice_objects  = create_choice_objects(choices, poll)
     tokens   = create_token_objects(poll, len(voter_mails))
-    #send_mails_with_tokens(poll, voter_mails, tokens)
+    send_mails_with_tokens(poll, voter_mails, tokens)
     return render(request, 'vote/create.html')
 
 
