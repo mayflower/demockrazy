@@ -25,7 +25,7 @@ SECRET_KEY = '%cs8fdyvv=@dbe7g^ltxt!=!c(033*tm$br3x%c%u@1%szg8#_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ "wahlcomputer.mayflower.de" ]
 
 
 # Application definition
