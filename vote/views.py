@@ -100,7 +100,11 @@ def vote(request, poll_identifier):
             "amount_remaining_tokens": amount_remaining_tokens,
             "amount_tokens_total": amount_tokens_total
         })
-
+    def close_poll_if_all_tokens_redeemed(poll):
+        amount_redeemed_tokens, amount_remaining_tokens, amount_redeemed_tokens = poll.get_amount_used_unused()
+        if amount_remaining_tokens == 0:
+            poll.is_active  = False
+            poll.save()
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if not poll.is_active:
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
@@ -120,6 +124,7 @@ def vote(request, poll_identifier):
             # F is used to avoid race conditions
             selected_choice.votes = F('votes') + 1
             selected_choice.save()
+            close_poll_if_all_tokens_redeemed(poll)
             return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
         else:
             return handle_vote_error(poll, request, "invalid token.", token_string)
