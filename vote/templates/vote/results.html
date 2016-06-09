@@ -1,11 +1,67 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
 <h1>results for poll {{ poll.title }}</h1>
 
-<ul>
+<table class="table">
+    <tr>
+        <th>Choice</td>
+        <th>Votes</td>
+    </tr>
     {% for choice in poll.choice_set.all %}
-    <li>{{ choice.choice_text }}: {{ choice.votes }}</li>
+        <tr>
+            <td>{{ choice.choice_text }}</td>
+            <td>{{ choice.votes }}</td>
+        </tr>
     {% endfor %}
-</ul>
+</table>
+
+<div id="results-chart"></div>
+{% endblock %}
+
+{% block js %}
+<script>
+$(function () {
+    $('#results-chart').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: null
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Votes',
+            colorByPoint: true,
+            data: [
+                {% for choice in poll.choice_set.all %}
+                    {
+                        name: '{{ choice.choice_text }}',
+                        y: {{ choice.votes }}
+                    },
+                {% endfor %}
+            ]
+        }]
+    });
+});
+</script>
 {% endblock %}

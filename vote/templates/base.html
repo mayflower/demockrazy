@@ -48,8 +48,10 @@
     </div><!-- /.container -->
 
 
+    <script src="{% static "jquery-2.2.4.min.js" %}"></script>
     <script src="{% static "bootstrap-3.3.6-dist/js/bootstrap.min.js" %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static "bootstrap-3.3.6-dist/css/bootstrap.css" %}" />
+    <script src="{% static "highcharts-custom.js" %}"></script>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -58,5 +60,7 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
     {% endcomment %}
+
+    {% block js %}{% endblock %}
   </body>
 </html>
