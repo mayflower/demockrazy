@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ poll }}<br>
+<h1>{{ poll }}</h1>
 {% if error_message %}
-<p>{{ error_message }}</p>
+<div class="alert alert-danger" role="alert">{{ error_message }}</div>
 {% endif %}
 <form action="{% url 'vote:manage' poll_identifier=poll.identifier %}" method="post">
-{% csrf_token %}
-<input type="text" name="token"><br>
-<input type="submit" value="Deactivate">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="token">Management Token</label>
+        <input type="text" name="token" id="token" class="form-control">
+    </div>
+    <input type="submit" class="btn btn-primary" value="Deactivate">
 </form>
 {% endblock %}

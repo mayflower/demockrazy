@@ -7,26 +7,31 @@
 
 <form action="{% url 'vote:create' %}" method="post">
     {% csrf_token %}
-    <label for="title">poll title:</label>
-    <input type="text" name="title" id="title">
-    <br>
+    <div class="form-group">
+        <label for="title">poll title:</label>
+        <input class="form-control" type="text" name="title" id="title">
+    </div>
 
-    <label for="description">description:</label>
-    <textarea name="description" id="description" cols="72" rows="10"></textarea>
-    <br>
+    <div class="form-group">
+        <label for="description">description:</label>
+        <textarea class="form-control" name="description" id="description" rows="10"></textarea>
+    </div>
 
+    <div class="form-group">
     <label for="choices">choices:</label>
-    <textarea name="choices" id="choices" cols="72" rows="18"></textarea>
-    <br>
+    <textarea class="form-control" name="choices" id="choices" rows="18"></textarea>
+    </div>
 
-    <label for="creator_mail">admin mail:</label>
-    <input type="email" name="creator_mail" id="creator_mail">
-    <br>
+    <div class="form-group">
+        <label for="creator_mail">admin mail:</label>
+        <input class="form-control" type="email" name="creator_mail" id="creator_mail">
+    </div>
 
-    <label for="voter_mails">recipients:</label>
-    <textarea name="voter_mails" id="voter_mails" cols="72" rows="23"></textarea>
-    <br>
+    <div class="form-group">
+        <label for="voter_mails">recipients:</label>
+        <textarea class="form-control" name="voter_mails" id="voter_mails" rows="23"></textarea>
+    </div>
 
-    <input type="submit" value="submit">
+    <input class="btn btn-primary" type="submit" value="submit">
 </form>
 {% endblock %}
