@@ -131,6 +131,8 @@ def success(request, poll_identifier):
 def manage(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     error_message = None
+    if not poll.is_active:
+        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
     if request.method == 'POST':
         token = request.POST['token']
         if poll.creator_token == token:
