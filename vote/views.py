@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 
@@ -15,10 +16,38 @@ def index(request):
 
 
 def create(request):
+    def parse_mails(mails):
+        result  = []
+        for mail in mails.split("\n"):
+            mail  = mail.strip()
+            if not mail:
+                continue
+            if mail.count("@") != 1 or mail.split("@")[1].count(".") == 0:
+                raise ValidationError("Mail %s invalid" % mail)
+            result.append(mail)
+        return result
+    def parse_choices(choices):
+        result  = []
+        for choice in choices.split("\n"):
+            choice  = choice.strip()
+            if not choice:
+                continue
+            result.append(choice)
+        return result
+    def create_choice_objects(choices, poll):
+        for choice in choices:
+            choice_obj  = Choice(poll = poll, choice_text = choice)
+            choice_obj.save()
     p_title = request.POST['title']
     p_description = request.POST['description']
+    creator_mail  = request.POST['creator_mail']
+    voter_mails = request.POST['voter_mails']
+    choices = request.POST['choices']
+    voter_mails = parse_mails(voter_mails)
+    choices = parse_choices(choices)
     poll = Poll(title=p_title, question_text=p_description)
     poll.save()
+    create_choice_objects(choices, poll)
     return render(request, 'vote/create.html')
 
 
@@ -75,4 +104,6 @@ def manage(request, poll_identifier):
 
 def results(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
+    if poll.is_active:
+      return HttpResponseRedirect(reverse('vote:vote', args=(poll_identifier,)))
     return render(request, 'vote/results.html', {'poll': poll})
