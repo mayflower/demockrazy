@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Poll {{ poll.title }}</h1>
+<h1>{{ poll }}</h1>
+<p>{{ poll.question_text }}</p>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -11,12 +12,14 @@
     <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
     <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
     {% endfor %}
-    <label for="token">Token: </label><input type="text" id="token" name="token" value="{{token}}">
+    <label for="token">Your voting token:</label> <input type="text" id="token" name="token" value="{{token}}">
     <input type="submit" value="Vote" />
 </form>
-<div>
-Total tokens: {{ amount_tokens_total }}<br>
-Redeemed tokens: {{ amount_redeemed_tokens }}<br>
-Remaining tokens: {{ amount_remaining_tokens }}<br>
-</div>
+<label></label>
+<ul class="nav nav-pills" role="tablist">
+  <li role="presentation"><b>Token State: </b></li>
+  <li role="presentation">Total <span class="badge">{{ amount_tokens_total }}</span></li>
+  <li role="presentation">Redeemed <span class="badge">{{ amount_redeemed_tokens }}</span></li>
+  <li role="presentation">Remaining <span class="badge">{{ amount_remaining_tokens }}</span></li>
+</ul>
 {% endblock %}
