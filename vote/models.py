@@ -55,7 +55,7 @@ class Choice(models.Model):
 
 class Token(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    token_string = models.CharField(max_length=128)
+    token_string = models.CharField(default=mk_token,max_length=128)
 
     def __str__(self):
         return "%s Token" % self.poll

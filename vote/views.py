@@ -38,9 +38,19 @@ def create(request):
             result.append(choice)
         return result
     def create_choice_objects(choices, poll):
+        result  = []
         for choice in choices:
             choice_obj  = Choice(poll = poll, choice_text = choice)
             choice_obj.save()
+            result.append(choice_obj)
+        return result
+    def create_token_objects(poll, amount):
+        result  = []
+        for i in range(amount):
+            token = Token(poll=poll)
+            token.save()
+            result.append(token)
+        return result
     p_title = request.POST['title']
     p_description = request.POST['description']
     creator_mail  = request.POST['creator_mail']
@@ -50,7 +60,8 @@ def create(request):
     choices = parse_choices(choices)
     poll = Poll(title=p_title, question_text=p_description)
     poll.save()
-    create_choice_objects(choices, poll)
+    choice_objects  = create_choice_objects(choices, poll)
+    tokens   = create_token_objects(poll, len(voter_mails))
     return render(request, 'vote/create.html')
 
 
