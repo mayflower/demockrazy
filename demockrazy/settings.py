@@ -145,6 +145,9 @@ Dies ist dir über folgenden Link möglich:
 Nach Abgabe deiner Stimme wird der Token aus der Datenbank gelöscht.
 Dadurch gibt es keine Korrelation zwischen Token (Teilnehmer) und abgegebener Stimme.
 
+Die Umfrage wird automatisch beendet, sobald alle Tokens verbraucht wurden. Nach Beendigung sind die Umfrageergebnisse sichtbar.
+Der Ersteller der Umfrage hat die möglichkeit diese vorzeitig zu beenden.
+
 XoXoXo
 Die Wahlleitung
 
