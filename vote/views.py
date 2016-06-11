@@ -55,24 +55,29 @@ def create(request):
             token.save()
             result.append(token)
         return result
-    def send_creator_mail(poll, creator_mail, creator_token):
+    def send_mail_or_print(args, print_only=False):
+        if print_only:
+            print(*args)
+        else:
+            send_mail(*args, fail_silently=False)
+    def send_creator_mail(poll, creator_mail, creator_token, print_only=False):
         manage_url = settings.VOTE_BASE_URL + reverse('vote:manage', args=(poll.identifier,))
-        send_mail('demockrazy: You created a new poll',
+        args  = ('demockrazy: You created a new poll',
                   "Hi, you just created a new poll that is manageable at %(manage_url)s\nYour admin token is: %(creator_token)s\nThank you for flying with LuftHansa" % { "manage_url": manage_url, "creator_token": creator_token},
             settings.VOTE_MAIL_FROM,
             [creator_mail],
-            fail_silently=False,
         )
-    def send_mails_with_tokens(poll, voter_mails, tokens):
+        send_mail_or_print(args, print_only)
+    def send_mails_with_tokens(poll, voter_mails, tokens, print_only=False):
         token_strings = [token.token_string for token in tokens]
         for voter_mail in voter_mails:
             poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:poll', args=(poll.identifier,)) + '?token=' + token_strings.pop()
-            send_mail(settings.VOTE_MAIL_SUBJECT,
+            args  = ( settings.VOTE_MAIL_SUBJECT,
                 settings.VOTE_MAIL_TEXT % { "poll_url_with_token": poll_url_with_token, "vote_base_url": settings.VOTE_BASE_URL},
                 settings.VOTE_MAIL_FROM,
                 [voter_mail],
-                fail_silently=False,
             )
+            send_mail_or_print(args, print_only)
     p_title = request.POST['title']
     p_description = request.POST['description']
     creator_mail  = request.POST['creator_mail']
@@ -84,8 +89,8 @@ def create(request):
     poll.save()
     choice_objects  = create_choice_objects(choices, poll)
     tokens   = create_token_objects(poll, len(voter_mails))
-    send_creator_mail(poll, creator_mail, poll.creator_token)
-    send_mails_with_tokens(poll, voter_mails, tokens)
+    send_creator_mail(poll, creator_mail, poll.creator_token, not settings.VOTE_SEND_MAILS)
+    send_mails_with_tokens(poll, voter_mails, tokens, not settings.VOTE_SEND_MAILS)
     return render(request, 'vote/create.html')
 
 

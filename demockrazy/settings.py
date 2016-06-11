@@ -150,5 +150,6 @@ Die Wahlleitung
 
 '''
 
+VOTE_SEND_MAILS = False
 
 
