@@ -152,4 +152,7 @@ Die Wahlleitung
 
 VOTE_SEND_MAILS = False
 
-
+try:
+  from .local_settings import *
+except ImportError:
+  print("No local settings found..")
