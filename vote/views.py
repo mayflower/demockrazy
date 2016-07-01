@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -132,27 +133,24 @@ def vote(request, poll_identifier):
     if not poll.is_active:
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
     try:
-        token_string = request.POST['token']
-        token = Token.objects.get(token_string=request.POST['token'])
-        if token.poll == poll:
-            token.delete()
-            if poll.type == 'multiple_choice':
-                for choice in Choice.objects.filter(poll=poll):
-                    if request.POST['choice%i' % choice.id] == 'yes':
-                        # F is used to avoid race conditions
-                        choice.votes = F('votes') + 1
-                        choice.save()
+        with transaction.atomic():
+            token_string = request.POST['token']
+            token = Token.objects.get(token_string=request.POST['token'])
+            if token.poll == poll:
+                if poll.type == 'multiple_choice':
+                    for choice in Choice.objects.filter(poll=poll):
+                        if request.POST['choice%i' % choice.id] == 'yes':
+                            choice.votes = F('votes') + 1
+                            choice.save()
+                else:
+                    selected_choice = poll.choice_set.get(pk=request.POST['choice'])
+                    selected_choice.votes = F('votes') + 1
+                    selected_choice.save()
+                token.delete()
+                close_poll_if_all_tokens_redeemed(poll)
+                return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
             else:
-                selected_choice = poll.choice_set.get(pk=request.POST['choice'])
-                # F is used to avoid race conditions
-                selected_choice.votes = F('votes') + 1
-                selected_choice.save()
-
-            close_poll_if_all_tokens_redeemed(poll)
-            return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
-        else:
-            return handle_vote_error(poll, request, "invalid token.", token_string)
-
+                return handle_vote_error(poll, request, "invalid token.", token_string)
 
     except KeyError:
         return handle_vote_error(poll, request, "Please fill out all fields.", token_string)
