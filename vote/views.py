@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.db.models import F
 from django.shortcuts import render, get_object_or_404
 
-from .models import Poll, Choice, Token
+from .models import POLL_TYPES, Poll, Choice, Token
 
 def poll(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
@@ -79,13 +79,16 @@ def create(request):
             )
             send_mail_or_print(args, print_only)
     p_title = request.POST['title']
+    p_type = request.POST['type']
+    if p_type not in POLL_TYPES:
+        raise Exception('Invalid poll type')
     p_description = request.POST['description']
     creator_mail  = request.POST['creator_mail']
     voter_mails = request.POST['voter_mails']
     choices = request.POST['choices']
     voter_mails = parse_mails(voter_mails)
     choices = parse_choices(choices)
-    poll = Poll(title=p_title, question_text=p_description)
+    poll = Poll(title=p_title, type=p_type, num_tokens=len(voter_mails), question_text=p_description)
     poll.save()
     choice_objects  = create_choice_objects(choices, poll)
     tokens   = create_token_objects(poll, len(voter_mails))
@@ -116,23 +119,32 @@ def vote(request, poll_identifier):
     try:
         token_string = request.POST['token']
         token = Token.objects.get(token_string=request.POST['token'])
-        selected_choice = poll.choice_set.get(pk=request.POST['choice'])
+        if token.poll == poll:
+            token.delete()
+            if poll.type == 'multiple_choice':
+                for choice in Choice.objects.filter(poll=poll):
+                    if request.POST['choice%i' % choice.id] == 'yes':
+                        # F is used to avoid race conditions
+                        choice.votes = F('votes') + 1
+                        choice.save()
+            else:
+                selected_choice = poll.choice_set.get(pk=request.POST['choice'])
+                # F is used to avoid race conditions
+                selected_choice.votes = F('votes') + 1
+                selected_choice.save()
+
+            close_poll_if_all_tokens_redeemed(poll)
+            return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
+        else:
+            return handle_vote_error(poll, request, "invalid token.", token_string)
+
+
     except KeyError:
         return handle_vote_error(poll, request, "Please fill out all fields.", token_string)
     except Choice.DoesNotExist:
         return handle_vote_error(poll, request, "You didn't select a choice.", token_string)
     except Token.DoesNotExist:
         return handle_vote_error(poll, request, "invalid token.", token_string)
-    else:
-        if token.poll == poll:
-            token.delete()
-            # F is used to avoid race conditions
-            selected_choice.votes = F('votes') + 1
-            selected_choice.save()
-            close_poll_if_all_tokens_redeemed(poll)
-            return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
-        else:
-            return handle_vote_error(poll, request, "invalid token.", token_string)
 
 
 def success(request, poll_identifier):
