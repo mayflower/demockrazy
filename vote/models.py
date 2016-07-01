@@ -5,6 +5,8 @@ import random
 import string
 
 
+POLL_TYPES = ['simple_choice', 'multiple_choice']
+
 
 def rand_string(length):
     return ''.join(random.SystemRandom().choice(
@@ -34,6 +36,8 @@ def mk_token():
 
 class Poll(models.Model):
     title = models.CharField(max_length=200)
+    type = models.CharField(max_length=20, default="simple_choice")
+    num_tokens = models.IntegerField(blank=True, null=True)
     question_text = models.TextField()
     pub_date = models.DateTimeField('date published', default=now, blank=True)
     creator_token = models.CharField(max_length=512, default=mk_admin_token)
@@ -44,12 +48,18 @@ class Poll(models.Model):
         return self.title
 
     def get_amount_used_unused(self):
-        amount_redeemed_tokens = 0
         choices = Choice.objects.filter(poll=self)
-        for choice in choices:
-            amount_redeemed_tokens += choice.votes
         amount_remaining_tokens = len(Token.objects.filter(poll=self))
-        return (amount_redeemed_tokens, amount_remaining_tokens, amount_redeemed_tokens + amount_remaining_tokens)
+        if self.num_tokens is not None:
+            total = self.num_tokens
+            amount_redeemed_tokens = total - amount_remaining_tokens
+        else:
+            amount_redeemed_tokens = 0
+            for choice in choices:
+                amount_redeemed_tokens += choice.votes
+            total = amount_redeemed_tokens + amount_remaining_tokens
+        return (amount_redeemed_tokens, amount_remaining_tokens, total)
+
 
 class Choice(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
@@ -57,12 +67,12 @@ class Choice(models.Model):
     votes = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s - %s" % (self.poll, self.choice_text )
+        return "%s - %s" % (self.poll, self.choice_text)
 
 
 class Token(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
-    token_string = models.CharField(default=mk_token,max_length=128)
+    token_string = models.CharField(default=mk_token, max_length=128)
 
     def __str__(self):
         return "%s Token" % self.poll

@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '%cs8fdyvv=@dbe7g^ltxt!=!c(033*tm$br3x%c%u@1%szg8#_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [ "wahlcomputer.mayflower.de" ]
+ALLOWED_HOSTS = [ ]
 
 
 # Application definition
@@ -123,7 +123,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = "mail.mayflower.de"
+EMAIL_HOST = ""
 EMAIL_PORT = 25
 #EMAIL_HOST_USER = "derp"
 #EMAIL_HOST_PASSWORD = "derp"
@@ -131,7 +131,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 VOTE_MAIL_FROM = "WahlLeitung@mayflower.de"
-VOTE_BASE_URL = 'https://wahlcomputer.mayflower.de'
+VOTE_BASE_URL = 'http://127.0.0.1:8000'
 VOTE_MAIL_SUBJECT = "demockrazy: Eine neue Abstimmung ist verfügbar"
 VOTE_MAIL_TEXT = '''
 Hallo,
@@ -153,5 +153,9 @@ Die Wahlleitung
 
 '''
 
+VOTE_SEND_MAILS = False
 
-
+try:
+  from .local_settings import *
+except ImportError:
+  print("No local settings found..")
