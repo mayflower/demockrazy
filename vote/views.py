@@ -71,9 +71,10 @@ def create(request):
 
     def send_creator_mail(poll, creator_mail, creator_token, print_only=False):
         manage_url = settings.VOTE_BASE_URL + reverse('vote:manage', args=(poll.identifier,))
-        args = ('demockrazy: You created a new poll',
-                "Hi, you just created a new poll that is manageable at %(manage_url)s\nYour admin token is: %(creator_token)s\nThank you for flying with LuftHansa" % {
-                    "manage_url": manage_url, "creator_token": creator_token},
+        args = (settings.VOTE_ADMIN_MAIL_SUBJECT % {"title": poll.title},
+                settings.VOTE_ADMIN_MAIL_TEXT % {
+                    "title": poll.title, "manage_url": manage_url, "creator_token": creator_token
+                },
                 settings.VOTE_MAIL_FROM,
                 [creator_mail],
                 )
@@ -83,10 +84,13 @@ def create(request):
         token_strings = [token.token_string for token in tokens]
         for voter_mail in voter_mails:
             poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:poll', args=(
-            poll.identifier,)) + '?token=' + token_strings.pop()
-            args = (settings.VOTE_MAIL_SUBJECT,
-                    settings.VOTE_MAIL_TEXT % {"poll_url_with_token": poll_url_with_token,
-                                               "vote_base_url": settings.VOTE_BASE_URL},
+                poll.identifier,)) + '?token=' + token_strings.pop()
+            args = (settings.VOTE_MAIL_SUBJECT % {"title": poll.title},
+                    settings.VOTE_MAIL_TEXT % {
+                        "title": poll.title,
+                        "poll_url_with_token": poll_url_with_token,
+                        "vote_base_url": settings.VOTE_BASE_URL
+                    },
                     settings.VOTE_MAIL_FROM,
                     [voter_mail],
                     )
