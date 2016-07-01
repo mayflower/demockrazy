@@ -19,6 +19,10 @@
         <td>Abstentions</td>
         <td>{{ amount_remaining_tokens }}</td>
     </tr>
+    <tr>
+        <td>Total Voters</td>
+        <td>{{ poll.num_tokens }}</td>
+    </tr>
 </table>
 
 <div id="results-chart"></div>
@@ -63,10 +67,10 @@ $(function () {
                         y: {{ choice.votes }}
                     },
                 {% endfor %}
-                {
+                {% if poll.type == 'simple_choice' %}{
                     name: 'Abstentions',
                     y: {{ amount_remaining_tokens }}
-                },
+                },{% endif %}
             ]
         }]
     });
