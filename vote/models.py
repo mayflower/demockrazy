@@ -37,7 +37,7 @@ def mk_token():
 class Poll(models.Model):
     title = models.CharField(max_length=200)
     type = models.CharField(max_length=20, default="simple_choice")
-    num_tokens = models.IntegerField(blank=True)
+    num_tokens = models.IntegerField(blank=True, null=True)
     question_text = models.TextField()
     pub_date = models.DateTimeField('date published', default=now, blank=True)
     creator_token = models.CharField(max_length=512, default=mk_admin_token)
