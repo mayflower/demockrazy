@@ -4,7 +4,6 @@ from django.utils.timezone import now
 import random
 import string
 
-
 POLL_TYPES = ['simple_choice', 'multiple_choice']
 
 
@@ -36,7 +35,7 @@ def mk_token():
 
 class Poll(models.Model):
     title = models.CharField(max_length=200)
-    type = models.CharField(max_length=20)
+    type = models.CharField(max_length=20, default="simple_choice")
     num_tokens = models.IntegerField(blank=True)
     question_text = models.TextField()
     pub_date = models.DateTimeField('date published', default=now, blank=True)
@@ -53,7 +52,8 @@ class Poll(models.Model):
         for choice in choices:
             amount_redeemed_tokens += choice.votes
         amount_remaining_tokens = len(Token.objects.filter(poll=self))
-        return (amount_redeemed_tokens, amount_remaining_tokens, amount_redeemed_tokens + amount_remaining_tokens)
+        total = self.num_tokens if self.num_tokens is not None else amount_redeemed_tokens + amount_remaining_tokens
+        return (amount_redeemed_tokens, amount_remaining_tokens, total)
 
 
 class Choice(models.Model):
