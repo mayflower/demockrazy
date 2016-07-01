@@ -4,6 +4,7 @@ from django.utils.timezone import now
 import random
 import string
 
+
 POLL_TYPES = ['simple_choice', 'multiple_choice']
 
 
@@ -47,12 +48,16 @@ class Poll(models.Model):
         return self.title
 
     def get_amount_used_unused(self):
-        amount_redeemed_tokens = 0
         choices = Choice.objects.filter(poll=self)
-        for choice in choices:
-            amount_redeemed_tokens += choice.votes
         amount_remaining_tokens = len(Token.objects.filter(poll=self))
-        total = self.num_tokens if self.num_tokens is not None else amount_redeemed_tokens + amount_remaining_tokens
+        if self.num_tokens is not None:
+            total = self.num_tokens
+            amount_redeemed_tokens = total - amount_remaining_tokens
+        else:
+            amount_redeemed_tokens = 0
+            for choice in choices:
+                amount_redeemed_tokens += choice.votes
+            total = amount_redeemed_tokens + amount_remaining_tokens
         return (amount_redeemed_tokens, amount_remaining_tokens, total)
 
 
