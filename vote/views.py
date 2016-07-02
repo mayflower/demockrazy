@@ -70,25 +70,6 @@ def process_validation_request(request):
         validation_token.save()
         return HttpResponseRedirect(reverse('vote:index') + "?validation_token=%s" % validation_token_string)
     return HttpResponseRedirect(reverse('vote:validation_request'))
-        
-def manage(request, poll_identifier):
-    poll = get_object_or_404(Poll, identifier=poll_identifier)
-    error_message = None
-    if not poll.is_active:
-        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
-    if request.method == 'POST':
-        token = request.POST['token']
-        if poll.creator_token == token:
-            poll.is_active = False
-            poll.save()
-            return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
-        error_message = 'Wrong management token'
-    context = {
-        'poll': poll,
-        'error_message': error_message,
-    }
-    return render(request, 'vote/manage.html', context)
-    
 
 def create(request):
     def parse_mails(mails):
