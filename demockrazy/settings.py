@@ -123,7 +123,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-EMAIL_HOST = "mail.mayflower.de"
+EMAIL_HOST = ""
 EMAIL_PORT = 25
 #EMAIL_HOST_USER = "derp"
 #EMAIL_HOST_PASSWORD = "derp"
@@ -160,4 +160,7 @@ Die Wahlleitung
 
 VOTE_SEND_MAILS = False
 
-
+try:
+  from .local_settings import *
+except ImportError:
+  print("No local settings found..")
