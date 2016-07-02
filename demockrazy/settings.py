@@ -152,6 +152,15 @@ XoXoXo
 Die Wahlleitung
 
 '''
+VOTE_VALIDATION_TEXT = '''
+Hi,
+
+you seem to be interested in creating a validated poll.
+Please visit the following URL to verify that this mail address belongs to you:
+%(validation_url_with_token)s
+
+Hugs and Kisses
+'''
 
 VOTE_SEND_MAILS = False
 

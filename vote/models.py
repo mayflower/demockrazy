@@ -60,6 +60,12 @@ class Poll(models.Model):
             total = amount_redeemed_tokens + amount_remaining_tokens
         return (amount_redeemed_tokens, amount_remaining_tokens, total)
 
+    def get_validation_token(self):
+        try:
+            validation_token = PersistentValidationToken.objects.get(poll=self)
+        except PersistentValidationToken.DoesNotExist:
+            return None
+        return validation_token
 
 class Choice(models.Model):
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
@@ -69,10 +75,16 @@ class Choice(models.Model):
     def __str__(self):
         return "%s - %s" % (self.poll, self.choice_text)
 
-
 class Token(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE,null=True)
     token_string = models.CharField(default=mk_token, max_length=128)
 
     def __str__(self):
         return "%s Token" % self.poll
+
+class PersistentValidationToken(Token):
+    creator_mail  = models.CharField(max_length=512)
+    is_validated  = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '%s Persistent Creator Token' % self.poll 

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Create verified poll</h1>
+{% if message %}
+<div class="alert alert-danger" role="alert">{{ message }}</div>
+{% endif %}
+<form action="{% url 'vote:validation_request' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="creator_mail">Admin Mail</label>
+        <input type="text" name="creator_mail" id="creator_mail" class="form-control">
+    </div>
+    <input type="submit" class="btn btn-primary" value="Validate">
+</form>
+{% endblock %}

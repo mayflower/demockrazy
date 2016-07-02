@@ -4,6 +4,7 @@
 <h1>{{ poll }}</h1>
 <p>{{ poll.question_text }}</p>
 
+{% if validation_token %}<p>Verified poll by {{ validation_token.creator_mail }}</p>{% endif %}
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <form action="{% url 'vote:vote' poll_identifier=poll.identifier %}" method="post">

@@ -32,7 +32,12 @@
 
     <div class="form-group">
         <label for="creator_mail">admin mail:</label>
+    {% if not validation_token %}
         <input class="form-control" type="email" name="creator_mail" id="creator_mail">
+    {% else %}
+        <input class="form-control" type="email" name="creator_mail" id="creator_mail" value="{{ validation_token.creator_mail }}" readonly>
+        <input name="validation_token" value="{{ validation_token.token_string }}" hidden>
+    {% endif %}
     </div>
 
     <div class="form-group">
