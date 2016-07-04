@@ -181,8 +181,12 @@ def manage(request, poll_identifier):
             poll.save()
             return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
         error_message = 'Wrong management token'
+    amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
     context = {
         'poll': poll,
+        'amount_redeemed_tokens': amount_redeemed_tokens,
+        'amount_remaining_tokens': amount_remaining_tokens,
+        'amount_tokens_total': amount_tokens_total,
         'error_message': error_message,
     }
     return render(request, 'vote/manage.html', context)
