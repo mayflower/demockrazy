@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.core.mail import send_mail
 from django.db.models import F
 from django.shortcuts import render, get_object_or_404
+from smtplib import SMTPException
 
 from .models import POLL_TYPES, Poll, Choice, Token
 
@@ -108,7 +109,7 @@ def create(request):
                     )
             try:
                 send_mail_or_print(args, print_only)
-            except Exception as e:
+            except SMTPException as e:
                 errors.append(str(e))
         return errors
     p_title = request.POST['title']
