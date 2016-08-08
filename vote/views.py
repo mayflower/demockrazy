@@ -111,6 +111,8 @@ def create(request):
                 send_mail_or_print(args, print_only)
             except SMTPException as e:
                 errors.append(str(e))
+            except UnicodeEncodeError as e:
+                errors.append("%s " % voter_mail + str(e))
         return errors
     p_title = request.POST['title']
     p_type = request.POST['type']
@@ -129,8 +131,8 @@ def create(request):
     send_creator_mail(poll, creator_mail, poll.creator_token, not settings.VOTE_SEND_MAILS)
     errors = send_mails_with_tokens(poll, voter_mails, tokens, not settings.VOTE_SEND_MAILS)
     context = {
-        "errors": errors
-    }
+            "errors": errors
+        }
     return render(request, 'vote/create.html', context)
 
 
