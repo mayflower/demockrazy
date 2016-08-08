@@ -130,7 +130,7 @@ EMAIL_PORT = 25
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-VOTE_MAIL_FROM = "WahlLeitung@mayflower.de"
+VOTE_MAIL_FROM = "wahlleitung@demo.ckrazy"
 VOTE_BASE_URL = 'http://127.0.0.1:8000'
 VOTE_ADMIN_MAIL_SUBJECT= "[democrazy] Poll '%(title)s' created"
 VOTE_ADMIN_MAIL_TEXT = '''
