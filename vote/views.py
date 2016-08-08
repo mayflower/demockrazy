@@ -93,6 +93,7 @@ def create(request):
 
     def send_mails_with_tokens(poll, voter_mails, tokens, print_only=False):
         token_strings = [token.token_string for token in tokens]
+        errors = []
         for voter_mail in voter_mails:
             poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:poll', args=(
                 poll.identifier,)) + '?token=' + token_strings.pop()
@@ -105,8 +106,11 @@ def create(request):
                     settings.VOTE_MAIL_FROM,
                     [voter_mail],
                     )
-            send_mail_or_print(args, print_only)
-
+            try:
+                send_mail_or_print(args, print_only)
+            except Exception as e:
+                errors.append(str(e))
+        return errors
     p_title = request.POST['title']
     p_type = request.POST['type']
     if p_type not in POLL_TYPES:
@@ -122,8 +126,11 @@ def create(request):
     choice_objects = create_choice_objects(choices, poll)
     tokens = create_token_objects(poll, len(voter_mails))
     send_creator_mail(poll, creator_mail, poll.creator_token, not settings.VOTE_SEND_MAILS)
-    send_mails_with_tokens(poll, voter_mails, tokens, not settings.VOTE_SEND_MAILS)
-    return render(request, 'vote/create.html')
+    errors = send_mails_with_tokens(poll, voter_mails, tokens, not settings.VOTE_SEND_MAILS)
+    context = {
+        "errors": errors
+    }
+    return render(request, 'vote/create.html', context)
 
 
 def vote(request, poll_identifier):

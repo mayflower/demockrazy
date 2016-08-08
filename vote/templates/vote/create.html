@@ -2,4 +2,11 @@
 
 {% block content %}
 <h1>poll created</h1>
+
+{% if errors %}
+  <b>Unfortunately, the following errors were encountered while dispatching mails.</b><br>
+  {% for error in errors %}
+    {{ error }}<br>
+  {% endfor %}
+{% endif %}
 {% endblock %}
