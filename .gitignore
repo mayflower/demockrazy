@@ -64,5 +64,4 @@ target/
 *.swp
 
 db.sqlite3
-migrations/
 static/
