@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Vote on {{ poll.title }} successful</h1>
+<h3 class="message">
+    Vote on <span class="message-poll-name">"{{ poll.title }}"</span> successful
+    </h3>
 {% endblock %}

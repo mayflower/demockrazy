@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ poll }}</h1>
+<h3>{{ poll }}</h3>
 {% if error_message %}
 <div class="alert alert-danger" role="alert">{{ error_message }}</div>
 {% endif %}
@@ -11,7 +11,7 @@
         <label for="token">Management Token</label>
         <input type="text" name="token" id="token" class="form-control">
     </div>
-    <input type="submit" class="btn btn-primary" value="Deactivate">
+    <input type="submit" class="button" value="Deactivate">
 </form>
 {% include 'vote/token_state.html' %}
 {% endblock %}
