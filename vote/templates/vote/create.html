@@ -1,12 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>poll created</h1>
+<h3 class="message">
+    poll created
+</h3>
 
 {% if errors %}
-  <b>Unfortunately, the following errors were encountered while dispatching mails.</b><br>
-  {% for error in errors %}
-    {{ error }}<br>
-  {% endfor %}
+<h3 class="message">
+    <b class="error-color">Unfortunately, the following errors were encountered while dispatching mails.</b><br>
+    {% for error in errors %}
+        {{ error }}<br>
+    {% endfor %}
+</h3>  
 {% endif %}
+
 {% endblock %}

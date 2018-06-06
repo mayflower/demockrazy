@@ -1,0 +1,140 @@
+/* layout */
+html, body {
+    background: #DDDDDD;
+    color: #1E1E1E;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.error-color {
+    color: #8F0A1A;   
+}
+
+/* menu */
+.hover-underline-menu {
+    position: relative;
+    background: #1E1E1E;
+    margin: 0;
+    padding: 10px 50px 8px 50px;
+    width: 100%;
+}
+
+.logo {
+    background: -webkit-linear-gradient(#fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.menu-button {
+    position: absolute;
+    right: 50px;
+}
+
+h3 {
+    border-bottom: 1px solid #BABABA;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    margin: 35px 0 15px 0;
+}
+h3.message {
+    background: #EEE;
+    border: 1px solid #BABABA;
+    padding: 20px 27px;
+    text-transform: inherit;
+}
+h3.message .message-poll-name {
+    
+}
+
+/* forms */
+label {
+    font-weight: bold; 
+}
+
+textarea.form-control {
+    height: 150px;
+}
+
+/* tables */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 30px auto;
+    width: 50%;
+}
+th {
+    font-size: 1.2rem;
+}
+tr {
+    background: #fff;
+}
+table.table tr:nth-child(odd) {
+    background: #DDDDDD;
+}
+td {
+    border: 1px solid #BABABA;
+    padding: 4px;
+    text-align: center;
+    width: 50%;
+}
+
+/* poll */
+.poll-token {
+    margin: 20px 0 10px 0;
+    height: 50px;
+}
+.poll-token label {
+    font-size: 0.75rem;
+    font-weight: normal;
+    line-height: 1.2;
+}
+.toggle-poll-token {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 1rem;
+}
+.toggle-poll-token:hover {
+    color: #fff;
+}
+.poll-token input {
+    display: none;
+    font-size: 0.75rem;
+    line-height: auto;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
+}
+
+/* token-state */
+.token-state {
+    margin: 30px 0 0 0;
+}
+
+.token-state-list {
+    font-size: 0.85rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.token-state-list li {
+    display: inline-block;
+    margin: 0;
+    padding: 0 30px 0 0;
+}
+
+.token-state-list li .poll-status-button {
+    display: inline;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    padding: 1px 4px;
+}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>create a new poll</h1>
+<h3>create a new poll</h3>
 
 {% if error_message %}<p>{{ error_message }}</p>{% endif %}
 
@@ -40,6 +40,6 @@
         <textarea class="form-control" name="voter_mails" id="voter_mails" rows="23"></textarea>
     </div>
 
-    <input class="btn btn-primary" type="submit" value="submit">
+    <input class="button" type="submit" value="submit">
 </form>
 {% endblock %}
