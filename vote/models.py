@@ -5,7 +5,7 @@ import random
 import string
 
 
-POLL_TYPES = ['simple_choice', 'multiple_choice']
+QUESTION_TYPES = ['simple_choice', 'multiple_choice']
 
 
 def rand_string(length):
@@ -36,10 +36,9 @@ def mk_token():
 
 class Poll(models.Model):
     title = models.CharField(max_length=200)
-    type = models.CharField(max_length=20, default="simple_choice")
-    num_tokens = models.IntegerField(blank=True, null=True)
-    question_text = models.TextField()
-    pub_date = models.DateTimeField('date published', default=now, blank=True)
+    num_tokens = models.IntegerField(blank=False, null=False)
+    description = models.TextField()
+    pub_date = models.DateTimeField(default=now, blank=True)
     creator_token = models.CharField(max_length=512, default=mk_admin_token)
     identifier = models.CharField(max_length=64, default=mk_identifier)
     is_active = models.BooleanField(default=True)
@@ -48,26 +47,25 @@ class Poll(models.Model):
         return self.title
 
     def get_amount_used_unused(self):
-        choices = Choice.objects.filter(poll=self)
         amount_remaining_tokens = len(Token.objects.filter(poll=self))
-        if self.num_tokens is not None:
-            total = self.num_tokens
-            amount_redeemed_tokens = total - amount_remaining_tokens
-        else:
-            amount_redeemed_tokens = 0
-            for choice in choices:
-                amount_redeemed_tokens += choice.votes
-            total = amount_redeemed_tokens + amount_remaining_tokens
-        return (amount_redeemed_tokens, amount_remaining_tokens, total)
+        amount_redeemed_tokens = self.num_tokens - amount_remaining_tokens
+        return (amount_redeemed_tokens, amount_remaining_tokens, self.num_tokens)
+
+
+class Question(models.Model):
+    title = models.TextField()
+    type = models.CharField(max_length=20, default="simple_choice")
+    description = models.TextField()
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
 
 
 class Choice(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.TextField()
     votes = models.IntegerField(default=0)
 
     def __str__(self):
-        return "%s - %s" % (self.poll, self.choice_text)
+        return "%s - %s" % (self.question, self.choice_text)
 
 
 class Token(models.Model):
