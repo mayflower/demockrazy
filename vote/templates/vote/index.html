@@ -1,45 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>create a new poll</h3>
-
-{% if error_message %}<p>{{ error_message }}</p>{% endif %}
-
-<form action="{% url 'vote:create' %}" method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="title">poll title:</label>
-        <input class="form-control" type="text" name="title" id="title">
+<h3>welcome!</h3>
+<p>...demockrazy is a simple token based voting system, focusing on anonymity for participants</p>
+{% if token %}
+{% else %}
+    <div class="cta-home-button-wrapper">
+        <button class="button cta-home-button">create new poll</button>
     </div>
+{% endif %}
 
-    <div class="form-group">
-        <label for="type">poll type:</label>
-        <select name="type" id="type">
-            <option value="simple_choice" selected>Simple Choice</option>
-            <option value="multiple_choice">Multiple Choice</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="description">description:</label>
-        <textarea class="form-control" name="description" id="description" rows="10"></textarea>
-    </div>
-
-    <div class="form-group">
-    <label for="choices">choices (separated by line):</label>
-    <textarea class="form-control" name="choices" id="choices" rows="18"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="creator_mail">admin mail:</label>
-        <input class="form-control" type="email" name="creator_mail" id="creator_mail">
-    </div>
-
-    <div class="form-group">
-        <label for="voter_mails">recipients (separated by line):</label>
-        <textarea class="form-control" name="voter_mails" id="voter_mails" rows="23"></textarea>
-    </div>
-
-    <input class="button" type="submit" value="submit">
-</form>
 {% endblock %}
