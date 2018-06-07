@@ -64,4 +64,4 @@ target/
 *.swp
 
 db.sqlite3
-static/
+./static/
