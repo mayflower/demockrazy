@@ -2,7 +2,9 @@
 {% load staticfiles %}
 
 {% block content %}
-<h1>results for poll {{ poll.title }}</h1>
+<h3>
+    results for poll <span class="message-poll-name">"{{ poll.title }}"</span>
+</h3>
 
 <table class="table">
     <tr>
@@ -16,6 +18,8 @@
         </tr>
     {% endfor %}
     <tr>
+</table>
+<table>
         <td>Abstentions</td>
         <td>{{ amount_remaining_tokens }}</td>
     </tr>

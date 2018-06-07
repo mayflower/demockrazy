@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ poll }}</h1>
+<h3>{{ poll }}</h3>
 <p>{{ poll.question_text }}</p>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -29,8 +29,9 @@
         {% endfor %}
     </table>
     {% endif %}
-    <label for="token">Your voting token:</label> <input type="text" id="token" name="token" value="{{token}}">
-    <input type="submit" value="Vote"/>
+    <input type="hidden" id="token" name="token" value="{{token}}">
+    
+    <input class="button" type="submit" value="Vote"/>
 </form>
 {% include 'vote/token_state.html' %}
 {% endblock %}
