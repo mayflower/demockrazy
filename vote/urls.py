@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 
-from . import views
+from vote.views import index
 
 pollpatterns = [
     url(r'^$', views.poll, name='poll'),
@@ -11,7 +11,7 @@ pollpatterns = [
 ]
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', index, name='index'),
     url(r'^create$', views.create, name='create'),
     url(r'^(?P<poll_identifier>[a-zA-Z0-9]+)/', include(pollpatterns)),
 ]

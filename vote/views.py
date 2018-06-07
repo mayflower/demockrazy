@@ -34,10 +34,6 @@ def poll(request, poll_identifier):
         return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
 
 
-def index(request):
-    return render(request, 'vote/index.html')
-
-
 def create(request):
     def parse_mails(mails):
         result = []
