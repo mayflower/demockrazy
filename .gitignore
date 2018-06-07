@@ -62,6 +62,7 @@ target/
 .ipynb_checkpoints
 
 *.swp
+*.DS_Store
 
 db.sqlite3
 ./static/
