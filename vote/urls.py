@@ -1,9 +1,9 @@
 from django.conf.urls import include, url
 
-from vote.views import index
+from vote.views import index, poll
 
 pollpatterns = [
-    url(r'^$', views.poll, name='poll'),
+    url(r'^$', poll, name='poll'),
     url(r'^vote$', views.vote, name='vote'),
     url(r'^success$', views.success, name='success'),
     url(r'^manage$', views.manage, name='manage'),
