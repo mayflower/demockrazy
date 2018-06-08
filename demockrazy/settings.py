@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [ ]
 
 INSTALLED_APPS = [
     'vote.apps.VoteConfig',
+    'voice.apps.VoiceConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
