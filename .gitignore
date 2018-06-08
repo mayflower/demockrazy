@@ -63,6 +63,7 @@ target/
 
 *.swp
 *.DS_Store
+.idea
 
 db.sqlite3
 ./static/
