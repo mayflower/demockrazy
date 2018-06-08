@@ -8,7 +8,7 @@ from django.db.models import F
 from django.shortcuts import render, get_object_or_404
 from smtplib import SMTPException
 
-from .models import POLL_TYPES, Poll, Choice, Token
+from .models import QUESTION_TYPES, Poll, Choice, Token
 
 
 def poll(request, poll_identifier):
@@ -116,7 +116,7 @@ def create(request):
         return errors
     p_title = request.POST['title']
     p_type = request.POST['type']
-    if p_type not in POLL_TYPES:
+    if p_type not in QUESTION_TYPES:
         raise Exception('Invalid poll type')
     p_description = request.POST['description']
     creator_mail = request.POST['creator_mail']
