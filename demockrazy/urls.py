@@ -4,6 +4,6 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url="vote/", permanent=False)),
-    url(r'^vote/', include('vote.urls', namespace='vote')),
+    url(r'^vote/', include(('vote.urls', 'vote'), namespace='vote')),
     url(r'^admin/', admin.site.urls),
 ]

@@ -2,7 +2,7 @@ from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.mail import send_mail
 from django.db.models import F
 from django.shortcuts import render, get_object_or_404
