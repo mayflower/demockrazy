@@ -1,14 +1,16 @@
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
 
 from . import views
 
-pollpatterns = [
+app_name = 'vote'
+
+pollpatterns = ([
     url(r'^$', views.poll, name='poll'),
     url(r'^vote$', views.vote, name='vote'),
     url(r'^success$', views.success, name='success'),
     url(r'^manage$', views.manage, name='manage'),
     url(r'^results$', views.results, name='result'),
-]
+], 'polls')
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),

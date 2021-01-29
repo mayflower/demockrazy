@@ -2,10 +2,10 @@ from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.core.mail import send_mail
 from django.db.models import F
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from smtplib import SMTPException
 
 from .models import POLL_TYPES, Poll, Choice, Token
@@ -31,7 +31,7 @@ def poll(request, poll_identifier):
             'error_message': error_message,
         })
     else:
-        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
+        return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
 
 
 def index(request):
@@ -82,7 +82,7 @@ def create(request):
             send_mail(*args, fail_silently=False)
 
     def send_creator_mail(poll, creator_mail, creator_token, print_only=False):
-        manage_url = settings.VOTE_BASE_URL + reverse('vote:manage', args=(poll.identifier,))
+        manage_url = settings.VOTE_BASE_URL + reverse('vote:polls:manage', args=(poll.identifier,))
         args = (settings.VOTE_ADMIN_MAIL_SUBJECT % {"title": poll.title},
                 settings.VOTE_ADMIN_MAIL_TEXT % {
                     "title": poll.title, "manage_url": manage_url, "creator_token": creator_token
@@ -96,7 +96,7 @@ def create(request):
         token_strings = [token.token_string for token in tokens]
         errors = []
         for voter_mail in voter_mails:
-            poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:poll', args=(
+            poll_url_with_token = settings.VOTE_BASE_URL + reverse('vote:polls:poll', args=(
                 poll.identifier,)) + '?token=' + token_strings.pop()
             args = (settings.VOTE_MAIL_SUBJECT % {"title": poll.title},
                     settings.VOTE_MAIL_TEXT % {
@@ -156,7 +156,7 @@ def vote(request, poll_identifier):
 
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     if not poll.is_active:
-        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
+        return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
     try:
         with transaction.atomic():
             token_string = request.POST['token']
@@ -173,7 +173,7 @@ def vote(request, poll_identifier):
                     selected_choice.save()
                 token.delete()
                 close_poll_if_all_tokens_redeemed(poll)
-                return HttpResponseRedirect(reverse('vote:success', args=(poll_identifier,)))
+                return HttpResponseRedirect(reverse('vote:polls:success', args=(poll_identifier,)))
             else:
                 return handle_vote_error(poll, request, "invalid token.", token_string)
 
@@ -194,13 +194,13 @@ def manage(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     error_message = None
     if not poll.is_active:
-        return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
+        return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
     if request.method == 'POST':
         token = request.POST['token']
         if poll.creator_token == token:
             poll.is_active = False
             poll.save()
-            return HttpResponseRedirect(reverse('vote:result', args=(poll_identifier,)))
+            return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
         error_message = 'Wrong management token'
     amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
     context = {
@@ -217,7 +217,7 @@ def results(request, poll_identifier):
     poll = get_object_or_404(Poll, identifier=poll_identifier)
     amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
     if poll.is_active:
-        return HttpResponseRedirect(reverse('vote:poll', args=(poll_identifier,)))
+        return HttpResponseRedirect(reverse('vote:polls:poll', args=(poll_identifier,)))
     return render(request, 'vote/results.html', {
         'poll': poll,
         'amount_redeemed_tokens': amount_redeemed_tokens,

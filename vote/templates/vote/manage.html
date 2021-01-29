@@ -5,7 +5,7 @@
 {% if error_message %}
 <div class="alert alert-danger" role="alert">{{ error_message }}</div>
 {% endif %}
-<form action="{% url 'vote:manage' poll_identifier=poll.identifier %}" method="post">
+<form action="{% url 'vote:polls:manage' poll_identifier=poll.identifier %}" method="post">
     {% csrf_token %}
     <div class="form-group">
         <label for="token">Management Token</label>
