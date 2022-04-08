@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 
-from vote.views import index
+from vote.views import index, poll
 
 app_name = 'vote'
 
