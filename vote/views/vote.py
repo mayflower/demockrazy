@@ -53,31 +53,3 @@ def vote(request, poll_identifier):
         return handle_vote_error(poll, request, "You didn't select a choice.", token_string)
     except Token.DoesNotExist:
         return handle_vote_error(poll, request, "invalid token.", token_string)
-
-
-def success(request, poll_identifier):
-    poll = get_object_or_404(Poll, identifier=poll_identifier)
-    return render(request, 'vote/success.html', {'poll': poll})
-
-
-def manage(request, poll_identifier):
-    poll = get_object_or_404(Poll, identifier=poll_identifier)
-    error_message = None
-    if not poll.is_active:
-        return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
-    if request.method == 'POST':
-        token = request.POST['token']
-        if poll.creator_token == token:
-            poll.is_active = False
-            poll.save()
-            return HttpResponseRedirect(reverse('vote:polls:result', args=(poll_identifier,)))
-        error_message = 'Wrong management token'
-    amount_redeemed_tokens, amount_remaining_tokens, amount_tokens_total = poll.get_amount_used_unused()
-    context = {
-        'poll': poll,
-        'amount_redeemed_tokens': amount_redeemed_tokens,
-        'amount_remaining_tokens': amount_remaining_tokens,
-        'amount_tokens_total': amount_tokens_total,
-        'error_message': error_message,
-    }
-    return render(request, 'vote/manage.html', context)
