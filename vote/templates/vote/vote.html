@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>{{ poll }}</h3>
+<p>{{ poll.question_text }}</p>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'vote:vote' poll_identifier=poll.identifier %}" method="post">
+    {% csrf_token %}
+    {% if poll.type == 'simple_choice' %}
+    {% for choice in poll.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br/>
+    {% endfor %}
+    {% else %}
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>yes</th>
+            <th>no</th>
+        </tr>
+        {% for choice in poll.choice_set.all %}
+        <tr>
+            <td><label>{{ choice.choice_text }}</label></td>
+            <td><input type="radio" name="choice{{ choice.id }}" value="yes"/></td>
+            <td><input type="radio" name="choice{{ choice.id }}" value="no"/></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <div class="poll-token">
+        <label for="token">
+            Your voting token
+            <a class="toggle-poll-token" href="javascript:;">+</a>
+        </label>
+        <input type="text" id="token" name="token" value="{{token}}">
+    </div>
+    <input class="button" type="submit" value="Vote"/>
+</form>
+{% include 'vote/token_state.html' %}
+{% endblock %}

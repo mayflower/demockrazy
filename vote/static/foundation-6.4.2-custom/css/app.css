@@ -37,6 +37,13 @@ html, body {
     position: absolute;
     right: 50px;
 }
+.cta-home-button-wrapper {
+    margin: 45px 0 0 0;
+    text-align: center;
+}
+.cta-home-button {
+    font-size: 1.2rem;
+}
 
 h3 {
     border-bottom: 1px solid #BABABA;
