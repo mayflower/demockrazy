@@ -38,7 +38,6 @@ class Poll(models.Model):
     title = models.CharField(max_length=200)
     type = models.CharField(max_length=20, default="simple_choice")
     num_tokens = models.IntegerField(blank=True, null=True)
-    question_text = models.TextField()
     pub_date = models.DateTimeField('date published', default=now, blank=True)
     creator_token = models.CharField(max_length=512, default=mk_admin_token)
     identifier = models.CharField(max_length=64, default=mk_identifier)
@@ -48,21 +47,30 @@ class Poll(models.Model):
         return self.title
 
     def get_amount_used_unused(self):
-        choices = Choice.objects.filter(poll=self)
         amount_remaining_tokens = len(Token.objects.filter(poll=self))
         if self.num_tokens is not None:
             total = self.num_tokens
             amount_redeemed_tokens = total - amount_remaining_tokens
         else:
+            questions = Question.objects.filter(poll=self)
             amount_redeemed_tokens = 0
-            for choice in choices:
-                amount_redeemed_tokens += choice.votes
+            for question in questions:
+                choices = Choice.objects.filter(question=question)
+                for choice in choices:
+                    amount_redeemed_tokens += choice.votes
             total = amount_redeemed_tokens + amount_remaining_tokens
         return (amount_redeemed_tokens, amount_remaining_tokens, total)
 
+class Question(models.Model):
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    question_text = models.TextField()
+
+    def __str__(self):
+        return self.question_text
+
 
 class Choice(models.Model):
-    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.TextField()
     votes = models.IntegerField(default=0)
 

@@ -9,25 +9,28 @@
 <form action="{% url 'vote:polls:vote' poll_identifier=poll.identifier %}" method="post">
     {% csrf_token %}
     {% if poll.type == 'simple_choice' %}
-    {% for choice in poll.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br/>
-    {% endfor %}
-    {% else %}
-    <table class="table">
-        <tr>
-            <th></th>
-            <th>yes</th>
-            <th>no</th>
-        </tr>
-        {% for choice in poll.choice_set.all %}
-        <tr>
-            <td><label>{{ choice.choice_text }}</label></td>
-            <td><input type="radio" name="choice{{ choice.id }}" value="yes"/></td>
-            <td><input type="radio" name="choice{{ choice.id }}" value="no"/></td>
-        </tr>
+        {% for question in poll.question_set.all %}
+            <h3>{{question.question_text}}</h3>
+            {% for choice in question.choice_set.all %}
+                <input type="radio" name="choice_{{ question.id }}" id="choice_{{ question.id }}_{{ forloop.counter }}" value="{{ choice.id }}"/>
+                <label for="choice_{{ question.id }}_{{ forloop.counter }}">{{ choice.choice_text }}</label><br/>
+            {% endfor %}
         {% endfor %}
-    </table>
+    {% else %}
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>yes</th>
+                <th>no</th>
+            </tr>
+            {% for choice in poll.choice_set.all %}
+            <tr>
+                <td><label>{{ choice.choice_text }}</label></td>
+                <td><input type="radio" name="choice{{ choice.id }}" value="yes"/></td>
+                <td><input type="radio" name="choice{{ choice.id }}" value="no"/></td>
+            </tr>
+            {% endfor %}
+        </table>
     {% endif %}
     <label for="token">Your voting token:</label> <input type="text" id="token" name="token" value="{{token}}">
     <input type="submit" value="Vote"/>

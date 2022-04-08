@@ -6,22 +6,27 @@
 
 <table class="table">
     <tr>
-        <th>Choice</td>
-        <th>Votes</td>
+        <th>Question</td>
+        {% for choice in poll.question_set.all.first.choice_set.all %}
+            <th>{{ choice.choice_text }}</td>
+        {% endfor %}
     </tr>
-    {% for choice in poll.choice_set.all %}
+
+    {% for question in poll.question_set.all %}
         <tr>
-            <td>{{ choice.choice_text }}</td>
-            <td>{{ choice.votes }}</td>
+            <td>{{ question.question_text }}</td>
+        {% for choice in question.choice_set.all %}
+                <td>{{ choice.votes }}</td>
+        {% endfor %}
         </tr>
     {% endfor %}
     <tr>
         <td>Abstentions</td>
-        <td>{{ amount_remaining_tokens }}</td>
+        <td colspan="{{ poll.question_set.all.first.choice_set.count }}">{{ amount_remaining_tokens }}</td>
     </tr>
     <tr>
         <td>Total Voters</td>
-        <td>{{ poll.num_tokens }}</td>
+        <td colspan="{{ poll.question_set.all.first.choice_set.count }}">{{ poll.num_tokens }}</td>
     </tr>
 </table>
 
