@@ -40,13 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -152,6 +151,9 @@ Dies ist dir über folgenden Link möglich:
 
 Nach Abgabe deiner Stimme wird der Token aus der Datenbank gelöscht.
 Dadurch gibt es keine Korrelation zwischen Token (Teilnehmer) und abgegebener Stimme.
+
+Die Umfrage wird automatisch beendet, sobald alle Tokens verbraucht wurden. Nach Beendigung sind die Umfrageergebnisse sichtbar.
+Der Ersteller der Umfrage hat die möglichkeit diese vorzeitig zu beenden.
 
 XoXoXo
 Die Wahlleitung
