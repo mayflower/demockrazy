@@ -66,3 +66,5 @@ target/
 db.sqlite3
 migrations/
 static/
+
+k8s/vendor

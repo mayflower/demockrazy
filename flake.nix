@@ -20,6 +20,10 @@
         buildInputs = [
           python3
           python3Packages.django
+          python3Packages.psycopg2
+          tanka
+          jsonnet-bundler
+          sops
         ];
       };
     });
@@ -56,6 +60,18 @@
         uwsgi = self.packages.${system}.uwsgi;
       };
       nginx = callPackage ./nix/nginx-image.nix { };
+    });
+    apps = forEachSystem (system: with pkgs.${system}; {
+      argoGenerate = {
+        type = "app";
+        program = "${writeShellScript "argo-generate" ''
+          cd k8s
+          ${jsonnet-bundler}/bin/jb install
+          ${sops}/bin/sops -d ./environments/default/secrets.sops.yaml | \
+            ${tanka}/bin/tk show --dangerous-allow-redirect environments/default \
+            --tla-code "secrets_yaml=importstr '/dev/stdin'"
+        ''}";
+      };
     });
   };
 }
