@@ -52,50 +52,10 @@
       '';
     });
     dockerImages = forEachSystem (system: with pkgs.${system}; {
-      default = dockerTools.buildImage {
-        name = "demockrazy-uwsgi";
-        tag = "latest";
-        copyToRoot = [ self.packages.${system}.uwsgi ];
-        config = {
-          Entrypoint = [
-            "demockrazy-uwsgi"
-          ];
-          ExposedPorts."3000/tcp" = {};
-        };
+      default = callPackage ./nix/demockracy-image.nix {
+        uwsgi = self.packages.${system}.uwsgi;
       };
-      nginx = dockerTools.buildLayeredImage {
-        name = "demockrazy-reverse-proxy";
-        tag = "latest";
-        contents = [ nginx fakeNss ];
-        extraCommands = "mkdir -p var/cache/nginx/client_body";
-        config = {
-          Entrypoint = [
-            "nginx"
-            "-c"
-            (writeText "nginx.conf" ''
-              user nobody nobody;
-              daemon off;
-              error_log /dev/stdout info;
-              pid /dev/null;
-              events {}
-              http {
-                access_log /dev/stdout;
-                include ${nginx}/conf/uwsgi_params;
-                server {
-                  listen 80;
-                  location / {
-                    uwsgi_pass 127.0.0.1:3000;
-                  }
-                  location /static/ {
-                    alias ${./vote/static}/;
-                  }
-                }
-              }
-            '')
-          ];
-          ExposedPorts."80/tcp" = {};
-        };
-      };
+      nginx = callPackage ./nix/nginx-image.nix { };
     });
   };
 }
