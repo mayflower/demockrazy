@@ -43,6 +43,7 @@ function (secrets_yaml, commit_hash) util.withSecrets ({
           DEMOCKRAZY_DB_HOST: cfg.database.cluster,
           DEMOCKRAZY_DOMAIN: cfg.domain,
         })
+        + container.mixin.readinessProbe.httpGet.withPort(upstreamPort)
         + container.withEnvMixin([
           envVar.fromSecretRef(
             'DEMOCKRAZY_DB_USER',
