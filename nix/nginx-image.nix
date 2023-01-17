@@ -1,4 +1,4 @@
-{ dockerTools, writeText, nginx, fakeNss }:
+{ dockerTools, writeText, nginx, fakeNss, mailcap }:
 
 dockerTools.buildLayeredImage {
   name = "demockrazy-reverse-proxy";
@@ -24,6 +24,7 @@ dockerTools.buildLayeredImage {
               uwsgi_pass 127.0.0.1:3000;
             }
             location /static/ {
+              include ${mailcap}/etc/nginx/mime.types;
               alias ${../vote/static}/;
             }
           }
