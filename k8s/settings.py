@@ -3,7 +3,7 @@ from os import getenv
 
 
 def getenv_or_error(key):
-    if v := getenv(key) is not None:
+    if (v := getenv(key)) is not None:
         return v
     raise Exception(f"Env variable {key} does not exist!")
 
