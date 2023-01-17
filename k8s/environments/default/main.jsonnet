@@ -22,10 +22,10 @@ util.withSecrets ({
   serviceSecrets: k.core.v1.secret.new(
     'demockrazy-service-secrets',
     {
-      'email_from': $._config.secrets.email_from,
-      'email_host': $._config.secrets.email_host,
-      'email_password': $._config.secrets.email_password,
-      'secret_key': $._config.secrets.secret_key,
+      'email_from': std.base64($._config.secrets.email_from),
+      'email_host': std.base64($._config.secrets.email_host),
+      'email_password': std.base64($._config.secrets.email_password),
+      'secret_key': std.base64($._config.secrets.secret_key),
     }
   ),
   service: {
@@ -45,12 +45,14 @@ util.withSecrets ({
         + container.withEnvMixin([
           envVar.fromSecretRef(
             'DEMOCKRAZY_DB_USER',
-            '%(cfg.database.name)s-owner-user.%(cfg.database.cluster)s.credentials.postgresql.acid.zalan.do',
+            '%s-owner-user.%s.credentials.postgresql.acid.zalan.do'
+            % [cfg.database.name, cfg.database.cluster],
             'username'
           ),
           envVar.fromSecretRef(
             'DEMOCKRAZY_DB_PW',
-            '%(cfg.database.name)s-owner-user.%(cfg.database.cluster)s.credentials.postgresql.acid.zalan.do',
+            '%s-owner-user.%s.credentials.postgresql.acid.zalan.do'
+            % [cfg.database.name, cfg.database.cluster],
             'password'
           ),
           envVar.fromSecretRef(
@@ -90,7 +92,7 @@ util.withSecrets ({
       numberOfInstances: 1,
       users: { root: [ 'superuser', 'createdb' ] },
       preparedDatabases: { [cfg.database.name]: { defaultUsers: true } },
-      postgresql: { version: '15' },
+      postgresql: { version: '14' },
     }
   }
 })
