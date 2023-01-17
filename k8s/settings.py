@@ -11,13 +11,11 @@ def getenv_or_error(key):
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'OPTIONS': {
-            'NAME': getenv_or_error('DEMOCKRAZY_DB_NAME'),
-            'USER': getenv_or_error('DEMOCKRAZY_DB_USER'),
-            'PASSWORD': getenv_or_error('DEMOCKRAZY_DB_PW'),
-            'HOST': getenv_or_error('DEMOCKRAZY_DB_HOST'),
-            'PORT': '5432',
-        }
+        'NAME': getenv_or_error('DEMOCKRAZY_DB_NAME'),
+        'USER': getenv_or_error('DEMOCKRAZY_DB_USER'),
+        'PASSWORD': getenv_or_error('DEMOCKRAZY_DB_PW'),
+        'HOST': getenv_or_error('DEMOCKRAZY_DB_HOST'),
+        'PORT': '5432',
     }
 }
 
