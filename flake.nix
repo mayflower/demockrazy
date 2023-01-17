@@ -41,7 +41,8 @@
       uwsgi = writeShellScriptBin "demockrazy-uwsgi" ''
         # FIXME is this really a nice solution? Check if this can cause small downtimes.
         pushd ${self} &>/dev/null
-          ${djangoEnv.${system}}/bin/python3 manage.py migrate
+          DJANGO_SETTINGS_MODULE=demockrazy_config \
+            ${djangoEnv.${system}}/bin/python3 manage.py migrate
         popd &>/dev/null
         ${uwsgi.${system}}/bin/uwsgi \
           --json ${writeText "demockrazy.json" (builtins.toJSON {
