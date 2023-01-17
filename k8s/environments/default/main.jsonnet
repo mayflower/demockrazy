@@ -36,6 +36,7 @@ function (secrets_yaml, commit_hash) util.withSecrets ({
       replicas=1,
       containers=[
         container.new('backend-nginx', cfg.images.nginx)
+        + container.mixin.readinessProbe.httpGet.withPort(80)
         + container.withPorts([port.new(upstreamPort, 80)]),
         container.new('backend-uwsgi', cfg.images.default)
         + container.withEnvMap({
@@ -43,7 +44,6 @@ function (secrets_yaml, commit_hash) util.withSecrets ({
           DEMOCKRAZY_DB_HOST: cfg.database.cluster,
           DEMOCKRAZY_DOMAIN: cfg.domain,
         })
-        + container.mixin.readinessProbe.httpGet.withPort(upstreamPort)
         + container.withEnvMixin([
           envVar.fromSecretRef(
             'DEMOCKRAZY_DB_USER',
