@@ -41,6 +41,7 @@ util.withSecrets ({
         + container.withEnvMap({
           DEMOCKRAZY_DB_NAME: cfg.database.name,
           DEMOCKRAZY_DB_HOST: cfg.database.cluster,
+          DEMOCKRAZY_DOMAIN: cfg.domain,
         })
         + container.withEnvMixin([
           envVar.fromSecretRef(
