@@ -67,9 +67,10 @@
         program = "${writeShellScript "argo-generate" ''
           cd k8s
           ${jsonnet-bundler}/bin/jb install
-          ${sops}/bin/sops -d ./environments/default/secrets.sops.yaml | \
-            ${tanka}/bin/tk show --dangerous-allow-redirect environments/default \
-            --tla-code "secrets_yaml=importstr '/dev/stdin'"
+          ${sops}/bin/sops -d ./environments/default/secrets.sops.yaml \
+            | ${tanka}/bin/tk show --dangerous-allow-redirect environments/default \
+                --tla-code "secrets_yaml=importstr '/dev/stdin'" \
+                --tla-str "commit_hash=''${ARGOCD_APP_REVISION:-$(git rev-parse HEAD)}"
         ''}";
       };
     });

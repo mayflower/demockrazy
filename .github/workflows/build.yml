@@ -20,6 +20,6 @@ jobs:
       - run: |
           for target in default nginx; do
             nix build -L .#dockerImages.x86_64-linux.$target --extra-experimental-features 'nix-command flakes'
-            skopeo copy --insecure-policy docker-archive://$(readlink -f ./result) docker://ghcr.io/$CI_PROJECT_PATH/$target:latest
+            skopeo copy --insecure-policy docker-archive://$(readlink -f ./result) docker://ghcr.io/$CI_PROJECT_PATH/$target:$GITHUB_SHA
           done
 
