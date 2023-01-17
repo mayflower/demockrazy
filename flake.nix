@@ -42,6 +42,8 @@
         # FIXME is this really a nice solution? Check if this can cause small downtimes.
         pushd ${self} &>/dev/null
           DJANGO_SETTINGS_MODULE=demockrazy_config \
+            ${djangoEnv.${system}}/bin/python3 manage.py makemigrations
+          DJANGO_SETTINGS_MODULE=demockrazy_config \
             ${djangoEnv.${system}}/bin/python3 manage.py migrate
         popd &>/dev/null
         ${uwsgi.${system}}/bin/uwsgi \
