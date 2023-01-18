@@ -69,3 +69,5 @@ migrations/
 static/
 
 k8s/vendor
+
+.direnv
