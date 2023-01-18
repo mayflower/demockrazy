@@ -5,11 +5,11 @@ local container = k.core.v1.container;
 local port = k.core.v1.containerPort;
 local envVar = k.core.v1.envVar;
 
-function (secrets_yaml, commit_hash) util.withSecrets ({
+function (secrets_yaml) util.withSecrets ({
   _config+:: {
     local config = self,
     domain: 'briefwahl.mayflower.cloud',
-    tag: commit_hash,
+    tag: std.extVar('commit_hash'),
     images: {
       default: 'ghcr.io/mayflower/demockrazy/default:%s' % config.tag,
       nginx: 'ghcr.io/mayflower/demockrazy/nginx:%s' % config.tag,
