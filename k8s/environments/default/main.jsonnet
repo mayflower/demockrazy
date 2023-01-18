@@ -36,7 +36,6 @@ function (secrets_yaml, commit_hash) util.withSecrets ({
       replicas=1,
       containers=[
         container.new('backend-nginx', cfg.images.nginx)
-        + container.mixin.readinessProbe.httpGet.withPort(80)
         + container.withPorts([port.new(upstreamPort, 80)]),
         container.new('backend-uwsgi', cfg.images.default)
         + container.withEnvMap({
