@@ -2,7 +2,8 @@ name: images
 on:
   push:
     branches:
-      - k8s
+      - master
+  pull_request:
 env:
   CI_PROJECT_PATH: ${{ github.repository }}
 jobs:
