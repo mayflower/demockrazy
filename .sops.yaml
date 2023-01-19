@@ -1,0 +1,22 @@
+keys:
+  - &fpletz D9C081E4C7F11E7F04CC7EAFBE2418F5C8A0CD6C
+  - &globin 0B0D37F530B74C80FB88276C14E3BEE96E5C5807
+  - &ma27 62B99C26F046721E26B004F6D006A998C6ABFDF1
+  - &butz D94D275A5819E929E612BF93E61A78BD77054B81
+  - &calbrecht FEBC964086BC58F361C5640F337FA8D94422E12C
+
+key_groups:
+  - &cd
+    pgp:
+      - *fpletz
+      - *globin
+      - *ma27
+      - *butz
+      - *calbrecht
+    age:
+      - age1zd93w99zc846w379wftnxyquelfh4g45t2uejcn579n2hm257s3qy9u8sn
+
+creation_rules:
+  - path_regex: ".+\\.sops\\.ya?ml$"
+    key_groups:
+      - *cd
