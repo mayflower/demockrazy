@@ -1,9 +1,15 @@
 {
   description = "A simple token based voting system";
 
-  inputs.nixpkgs.url = "github:mayflower/nixpkgs/mf-stable";
+  inputs = {
+    nixpkgs.url = "github:mayflower/nixpkgs/mf-stable";
+    argocd-nix-flakes-plugin = {
+      url = "github:mayflower/argocd-nix-flakes-plugin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
-  outputs = { self, nixpkgs }: let
+  outputs = { self, nixpkgs, argocd-nix-flakes-plugin }: let
     inherit (nixpkgs) lib;
     forEachSystem = lib.genAttrs [ "x86_64-linux" ];
     pkgs = forEachSystem (system: nixpkgs.legacyPackages.${system});
@@ -68,17 +74,7 @@
       nginx = callPackage ./nix/nginx-image.nix { };
     });
     apps = forEachSystem (system: with pkgs.${system}; {
-      argoGenerate = {
-        type = "app";
-        program = "${writeShellScript "argo-generate" ''
-          cd k8s
-          ${jsonnet-bundler}/bin/jb install
-          ${sops}/bin/sops -d ./environments/default/secrets.sops.yaml \
-            | ${tanka}/bin/tk show --dangerous-allow-redirect environments/default \
-                --tla-code "secrets_yaml=importstr '/dev/stdin'" \
-                --tla-str "commit_hash=''${ARGOCD_APP_REVISION:-$(git rev-parse HEAD)}"
-        ''}";
-      };
+      inherit (argocd-nix-flakes-plugin.apps.${system}) tankaShow tankaEval;
     });
   };
 }
