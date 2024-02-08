@@ -1,19 +1,19 @@
-from django.conf.urls import include, url
+from django.urls import include, re_path
 
 from . import views
 
 app_name = 'vote'
 
 pollpatterns = ([
-    url(r'^$', views.poll, name='poll'),
-    url(r'^vote$', views.vote, name='vote'),
-    url(r'^success$', views.success, name='success'),
-    url(r'^manage$', views.manage, name='manage'),
-    url(r'^results$', views.results, name='result'),
+    re_path(r'^$', views.poll, name='poll'),
+    re_path(r'^vote$', views.vote, name='vote'),
+    re_path(r'^success$', views.success, name='success'),
+    re_path(r'^manage$', views.manage, name='manage'),
+    re_path(r'^results$', views.results, name='result'),
 ], 'polls')
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^create$', views.create, name='create'),
-    url(r'^(?P<poll_identifier>[a-zA-Z0-9]+)/', include(pollpatterns)),
+    re_path(r'^$', views.index, name='index'),
+    re_path(r'^create$', views.create, name='create'),
+    re_path(r'^(?P<poll_identifier>[a-zA-Z0-9]+)/', include(pollpatterns)),
 ]
