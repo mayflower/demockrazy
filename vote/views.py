@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from smtplib import SMTPException
 
-from .models import POLL_TYPES, Poll, Choice, Token
+from .models import POLL_TYPES, Poll, Question, Choice, Token
 
 
 def poll(request, poll_identifier):
@@ -50,6 +50,15 @@ def create(request):
             result.append(mail)
         return result
 
+    def parse_questions(questions):
+        result = []
+        for question in questions.split("\n"):
+            question = question.strip()
+            if not question:
+                continue
+            result.append(question)
+        return result
+
     def parse_choices(choices):
         result = []
         for choice in choices.split("\n"):
@@ -59,13 +68,13 @@ def create(request):
             result.append(choice)
         return result
 
-    def create_choice_objects(choices, poll):
-        result = []
-        for choice in choices:
-            choice_obj = Choice(poll=poll, choice_text=choice)
-            choice_obj.save()
-            result.append(choice_obj)
-        return result
+    def create_question_and_choice_objects(poll, questions, choices):
+        for question in questions:
+            question_obj = Question(poll=poll, question_text=question)
+            question_obj.save()
+            for choice in choices:
+                choice_obj = Choice(question=question_obj, choice_text=choice)
+                choice_obj.save()
 
     def create_token_objects(poll, amount):
         result = []
@@ -122,11 +131,16 @@ def create(request):
     creator_mail = request.POST['creator_mail']
     voter_mails = request.POST['voter_mails']
     choices = request.POST['choices']
+
     voter_mails = parse_mails(voter_mails)
+    questions = parse_questions(p_description)
     choices = parse_choices(choices)
-    poll = Poll(title=p_title, type=p_type, num_tokens=len(voter_mails), question_text=p_description)
+
+    poll = Poll(title=p_title, type=p_type, num_tokens=len(voter_mails))
     poll.save()
-    choice_objects = create_choice_objects(choices, poll)
+
+    create_question_and_choice_objects(poll, questions, choices)
+
     tokens = create_token_objects(poll, len(voter_mails))
     send_creator_mail(poll, creator_mail, poll.creator_token, not settings.VOTE_SEND_MAILS)
     errors = send_mails_with_tokens(poll, voter_mails, tokens, not settings.VOTE_SEND_MAILS)
@@ -162,15 +176,16 @@ def vote(request, poll_identifier):
             token_string = request.POST['token']
             token = Token.objects.get(token_string=request.POST['token'])
             if token.poll == poll:
-                if poll.type == 'multiple_choice':
-                    for choice in Choice.objects.filter(poll=poll):
-                        if request.POST['choice%i' % choice.id] == 'yes':
-                            choice.votes = F('votes') + 1
-                            choice.save()
-                else:
-                    selected_choice = poll.choice_set.get(pk=request.POST['choice'])
-                    selected_choice.votes = F('votes') + 1
-                    selected_choice.save()
+                for question in Question.objects.filter(poll=poll):
+                    if poll.type == 'multiple_choice':
+                        for choice in Choice.objects.filter(question=question):
+                            if request.POST['choice%i' % choice.id] == 'yes':
+                                choice.votes = F('votes') + 1
+                                choice.save()
+                    else:
+                        selected_choice = question.choice_set.get(pk=request.POST['choice_%i' % question.id])
+                        selected_choice.votes = F('votes') + 1
+                        selected_choice.save()
                 token.delete()
                 close_poll_if_all_tokens_redeemed(poll)
                 return HttpResponseRedirect(reverse('vote:polls:success', args=(poll_identifier,)))

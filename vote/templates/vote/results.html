@@ -6,32 +6,43 @@
 
 <table class="table">
     <tr>
-        <th>Choice</td>
-        <th>Votes</td>
+        <th>Question</td>
+        {% for choice in poll.question_set.all.first.choice_set.all %}
+            <th>{{ choice.choice_text }}</td>
+        {% endfor %}
     </tr>
-    {% for choice in poll.choice_set.all %}
+
+    {% for question in poll.question_set.all %}
         <tr>
-            <td>{{ choice.choice_text }}</td>
-            <td>{{ choice.votes }}</td>
+            <td>{{ question.question_text }}</td>
+        {% for choice in question.choice_set.all %}
+                <td>{{ choice.votes }}</td>
+        {% endfor %}
         </tr>
     {% endfor %}
     <tr>
         <td>Abstentions</td>
-        <td>{{ amount_remaining_tokens }}</td>
+        <td colspan="{{ poll.question_set.all.first.choice_set.count }}">{{ amount_remaining_tokens }}</td>
     </tr>
     <tr>
         <td>Total Voters</td>
-        <td>{{ poll.num_tokens }}</td>
+        <td colspan="{{ poll.question_set.all.first.choice_set.count }}">{{ poll.num_tokens }}</td>
     </tr>
 </table>
-
-<div id="results-chart"></div>
+{% for question in poll.question_set.all %}
+<hr>
+<div>
+    <h3>{{ question.question_text }}</h3>
+    <div id="results-chart_{{ question.id }}"></div>
+</div>
+{% endfor %}
 {% endblock %}
 
 {% block js %}
 <script>
 $(function () {
-    $('#results-chart').highcharts({
+    {% for question in poll.question_set.all %}
+    $('#results-chart_{{ question.id }}').highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -61,7 +72,7 @@ $(function () {
             name: 'Votes',
             colorByPoint: true,
             data: [
-                {% for choice in poll.choice_set.all %}
+                {% for choice in question.choice_set.all %}
                     {
                         name: '{{ choice.choice_text }}',
                         y: {{ choice.votes }}
@@ -74,6 +85,7 @@ $(function () {
             ]
         }]
     });
+    {% endfor %}
 });
 </script>
 {% endblock %}
